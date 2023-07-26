@@ -6,311 +6,122 @@
 
 "use strict";
 
-import {Entry, find, insert, insert_entry, between, is_empty_entry, is_empty_node, size, fill_rate, is_full, compare, last, lesser_node, grater_node, create_node} from "./index";
+import {between, create_node, Entry, erase, Find, Insert, is_empty_entry, is_empty_node} from "./index";
 
 describe('BTree', () => {
 
-	it( "etc", () => {
+	it("etc", () => {
 
-			expect(between(100, 99, 101)).toBeTruthy();
+		expect(between(100, 99, 101)).toBeTruthy();
 
-			const entry: Entry = {
-				key: null,
-				value: null,
-				lesser: null,
-				grater: null
-			}
-
-			expect(is_empty_entry(entry)).toBeTruthy();
-
-			const empty_node: Entry[] = create_node();
-
-			expect(is_empty_node(empty_node, 0)).toBeTruthy();
-
-			const three_entry_node: Entry[] = [
-				{key: 1, value: null, lesser: null, grater: null},
-				{key: 2, value: null, lesser: null, grater: null},
-				{key: 3, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-			]
-
-			expect(size(three_entry_node, 0)).toBe(3);
-
-			expect(fill_rate(three_entry_node, 0)).toBe(0.25);
-
-
-			const full_node: Entry[] = [
-				{key: 1, value: null, lesser: null, grater: null},
-				{key: 2, value: null, lesser: null, grater: null},
-				{key: 3, value: null, lesser: null, grater: null},
-				{key: 4, value: null, lesser: null, grater: null},
-				{key: 1, value: null, lesser: null, grater: null},
-				{key: 2, value: null, lesser: null, grater: null},
-				{key: 3, value: null, lesser: null, grater: null},
-				{key: 4, value: null, lesser: null, grater: null},
-				{key: 1, value: null, lesser: null, grater: null},
-				{key: 2, value: null, lesser: null, grater: null},
-				{key: 3, value: null, lesser: null, grater: null},
-				{key: 4, value: null, lesser: null, grater: null},
-			]
-
-			expect(is_full(full_node, 0)).toBeTruthy();
-
-			expect(compare(full_node, 0, 2)).toBe(0);
-
+		const entry: Entry = {
+			key: null,
+			value: null,
+			lesser: null,
+			grater: null
 		}
 
-	)
-/*
-	it('find', () => {
+		expect(is_empty_entry(entry)).toBeTruthy();
 
-		const records: Entry[] = [
+		const empty_node: Entry[] = create_node();
 
-			{key: 150, value: 3, lesser: 4, grater: null},
-			{key: 200, value: 4, lesser: null, grater: 16},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: 3, value: 0, lesser: null, grater: null},
-			{key: 100, value: 1, lesser: null, grater: null},
-			{key: 120, value: 2, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: 320, value: 5, lesser: null, grater: null},
-			{key: 330, value: 6, lesser: null, grater: null},
-			{key: 340, value: 7, lesser: null, grater: null},
-			{key: 350, value: 8, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: 400, value: 10, lesser: null, grater: null},
-			{key: 500, value: 11, lesser: null, grater: null},
-			{key: 600, value: 12, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: 360, value: 9, lesser: 8, grater: 12},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-		]
-
-		expect(insert(records, 0, 361, 100)).toBe(16);
-		expect(find(records, 0, 0, 3)[2].value).toBe(0);
-		expect(find(records, 0, 0, 100)[2].value).toBe(1);
-		expect(find(records, 0, 0, 120)[2].value).toBe(2);
-		expect(find(records, 0, 0, 150)[2].value).toBe(3);
-		expect(find(records, 0, 0, 200)[2].value).toBe(4);
-		expect(find(records, 0, 0, 320)[2].value).toBe(5);
-		expect(find(records, 0, 0, 330)[2].value).toBe(6);
-		expect(find(records, 0, 0, 340)[2].value).toBe(7);
-		expect(find(records, 0, 0, 350)[2].value).toBe(8);
-		expect(find(records, 0, 0, 360)[2].value).toBe(9);
-		expect(find(records, 0, 0, 361)[2].value).toBe(100);
-		expect(find(records, 0, 0, 400)[2].value).toBe(10);
-		expect(find(records, 0, 0, 500)[2].value).toBe(11);
-		expect(find(records, 0, 0, 600)[2].value).toBe(12);
-
+		expect(is_empty_node(empty_node, 0)).toBeTruthy();
 
 	});
 
-	it('insert', () => {
-
-		let records: Entry[] = create_node();
-
-		records[0] = {key: 100, value: null, lesser: 1, grater: null};
-		records[1] = {key: 200, value: null, lesser: null, grater: 8};
-
-		insert_entry(records, 0, 350, 200);
-		expect(find(records, 0, 0, 350)[2].value).toBe(200);
-
-	});
-
-	it('insert2', () => {
-
-		let records: Entry[] = [
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-		];
-
-		insert(records, 0, 3, 1);
-		insert(records, 0, 100, 2);
-		insert(records, 0, 120, 3);
-		insert(records, 0, 150, 4);
-		insert(records, 0, 200, 5);
-		insert(records, 0, 320, 6);
-		insert(records, 0, 330, 7);
-		insert(records, 0, 340, 8);
-		insert(records, 0, 350, 9);
-		insert(records, 0, 360, 10);
-		insert(records, 0, 361, 11);
-		insert(records, 0, 400, 12);
-		insert(records, 0, 500, 13);
-		insert(records, 0, 600, 14);
-
-		expect(find(records, 0, 0, 3)[2].value).toBe(1);
-		expect(find(records, 0, 0, 100)[2].value).toBe(2);
-		expect(find(records, 0, 0, 120)[2].value).toBe(3);
-		expect(find(records, 0, 0, 150)[2].value).toBe(4);
-		expect(find(records, 0, 0, 200)[2].value).toBe(5);
-		expect(find(records, 0, 0, 320)[2].value).toBe(6);
-		expect(find(records, 0, 0, 330)[2].value).toBe(7);
-		expect(find(records, 0, 0, 340)[2].value).toBe(8);
-		expect(find(records, 0, 0, 350)[2].value).toBe(9);
-		expect(find(records, 0, 0, 360)[2].value).toBe(10);
-		expect(find(records, 0, 0, 361)[2].value).toBe(11);
-		expect(find(records, 0, 0, 400)[2].value).toBe(12);
-		expect(find(records, 0, 0, 500)[2].value).toBe(13);
-		expect(find(records, 0, 0, 600)[2].value).toBe(14);
-
-		console.log(records);
-
-	});
-
-	it('insert3', () => {
-
-		let records: Entry[] = [
-			{key: 100, value: null, lesser: 1, grater: null},
-			{key: 200, value: null, lesser: null, grater: 8},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-		];
-
-		const l = [
-			{ key: 100, value: null, lesser: 1, grater: null },
-			{ key: 200, value: null, lesser: null, grater: 8 },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null }
-		]
-
-		const g = [
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{key: 300, value: null, lesser: null, grater: null},
-			{key: 400, value: null, lesser: null, grater: null},
-			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null }
-		]
-
-		expect(lesser_node(records, 0, 250)).toStrictEqual(l);
-		expect(grater_node(records, 0, 250)).toStrictEqual(g);
-	});
-*/
-	it('insert4', () => {
-
-		let records: Entry[] = create_node();
-
-		for (let index = 0; index < 60; index++) {
-			insert(records, 0, index, index + 1);
-		}
-
-		for (let index = 0; index < 60; index++) {
-			expect(find(records, 0, 0, index)[2].value).toBe(index + 1);
-		}
-
-		console.log(records);
-
-	});
-
-	it('insert5', () => {
+	it('seq insert', () => {
 
 		let records: Entry[] = create_node();
 
 		for (let index = 0; index < 100; index++) {
-			insert(records, 0, index, index + 1);
+			Insert(records, index, index + 1);
+		}
+
+		for (let index = 0; index < 100; index++) {
+			let found: Entry = Find(records, index);
+			if (found) {
+				expect(found.value).toBe(index + 1);
+			}
 		}
 
 	});
 
-	it('insert6', () => {
+	it('random insert', () => {
 
 		let records: Entry[] = create_node();
 
-		for (let index = 0; index < 60; index++) {
-			var random = Math.floor(Math.random() * 10000);
-			insert(records, 0, random, index + 1);
+		for (let index = 0; index < 100; index++) {
+			var random = Math.floor(Math.random() * 1000);
+			Insert(records, random, random);
 		}
 
-		//for (let index = 0; index < 60; index++) {
-		//	expect(find(records, 0, 0, index)[2].value).toBe(index + 1);
-		//}
+		for (let index = 0; index < 1000; index++) {
+			let result: Entry = Find(records, index);
+			if (result) {
+				expect(result.value).toBe(index);
+			}
+		}
+	});
+
+	it('insert3', () => {
+
+		let records: Entry[] = create_node();
+
+		for (let index = 0; index < 1000; index++) {
+			var random = Math.floor(Math.random() * 1000000);
+			Insert(records, random, index + 1);
+		}
+
+	//	console.log(JSON.stringify(records));
+
+	});
+/*
+	it('shrink_node', () => {
+
+		let records: Entry[] = [
+		{key: 1, value: null, lesser: null, grater: null},
+		{key: 1, value: null, lesser: null, grater: null},
+		{key: 2, value: null, lesser: null, grater: null},
+		{key: 3, value: null, lesser: null, grater: null},
+			{key: 1, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: 2, value: null, lesser: null, grater: null},
+			{key: 3, value: null, lesser: null, grater: null},
+			{key: 1, value: null, lesser: null, grater: null},
+			{key: 2, value: null, lesser: null, grater: null},
+			{key: 2, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null}
+		]
+
+		shrink_node(records, 0);
+
+		console.log(records);
+	})
+*/
+	it('erase', () => {
+
+		let records: Entry[] = create_node();
+
+		for (let index = 0; index < 10; index++) {
+			Insert(records, index, index + 1);
+		}
+
+		erase(records, 0, 2);
+
+		console.log(Find(records,1));
+		console.log(Find(records,2));
+		console.log(Find(records,3));
+		console.log(Find(records,4));
+		console.log(Find(records,5));
+		console.log(Find(records,6));
+		console.log(Find(records,7));
+		console.log(Find(records,8));
+		console.log(Find(records,9));
+		console.log(Find(records,10));
 
 		console.log(JSON.stringify(records));
 

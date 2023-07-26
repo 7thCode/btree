@@ -13,38 +13,7 @@ export class Entry {
 	public grater: number;
 }
 
-const node_size = 12;
-
-const key = 0;
-const value = 1;
-const lesser = 2;
-const grater = 3;
-
-/*
-let d: any[][] = [
-    [150, 3, 1, null],
-    [200, 4, null, 2],
-    [null, null, null, null],
-    [null, null, null, null],
-    [3, 0, null, null],
-    [100, 1, null, null],
-    [120, 2, null, null],
-    [null, null, null, null],
-    [360, 9, 3, 4],
-    [null, null, null, null],
-    [null, null, null, null],
-    [null, null, null, null],
-    [320, 5, null, null],
-    [330, 6, null, null],
-    [340, 7, null, null],
-    [350, 8, null, null],
-    [400, 10, null, null],
-    [500, 11, null, null],
-    [600, 12, null, null],
-    [null, null, null, null]
-];
-*/
-
+const node_size = 4;
 
 export const last = (records: Entry[]): number => {
 	return records.length;
@@ -56,12 +25,12 @@ export const between = (value: number, start: number, end: number): boolean => {
 
 export const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry] => {
 	const _size = size(records, current_node);  // current_node.length;
-	for (let index: number = 0; index < _size; index++) {
-		const lesser_entry: Entry = records[current_node + index];
+	for (let offset: number = 0; offset < _size; offset++) {
+		const lesser_entry: Entry = records[current_node + offset];
 
 		// 先頭、中間
-		if (index < _size - 1) {
-			const grater_entry: Entry = records[current_node + (index + 1)];
+		if (offset < _size - 1) {
+			const grater_entry: Entry = records[current_node + (offset + 1)];
 
 			if (find_key === grater_entry.key) {
 				return [upper_node, current_node, grater_entry];
@@ -102,9 +71,6 @@ export const find = (records: Entry[], upper_node: number, current_node: number,
 }
 
 export const is_empty_entry = (entry: Entry): boolean => {
-	if (!entry) {
-		const hoge = 1;
-	}
 	return (entry.key == null &&
 		entry.value == null &&
 		entry.lesser == null &&
@@ -113,8 +79,8 @@ export const is_empty_entry = (entry: Entry): boolean => {
 
 export const is_empty_node = (records: Entry[], current_node: number): boolean => {
 	let result = true;
-	for (let index = 0; index < node_size; index++) {
-		const entry: Entry = records[current_node + index];
+	for (let offset = 0; offset < node_size; offset++) {
+		const entry: Entry = records[current_node + offset];
 		result = result && is_empty_entry(entry);
 	}
 	return result;
@@ -122,10 +88,10 @@ export const is_empty_node = (records: Entry[], current_node: number): boolean =
 
 export const size = (records: Entry[], current_node: number): number => {
 	let result = node_size;
-	for (let index = 0; index < node_size; index++) {
-		const entry: Entry = records[current_node + index];
+	for (let offset = 0; offset < node_size; offset++) {
+		const entry: Entry = records[current_node + offset];
 		if (is_empty_entry(entry)) {
-			result = index;
+			result = offset;
 			break;
 		}
 	}
@@ -164,40 +130,38 @@ export const insert_entry = (records: Entry[], current_node: number, key: number
 		records[current_node] = {key: key, value: value, lesser: null, grater: null}
 	} else {
 		const records_buffer: Entry[] = create_node(); // Entryに「隙間を開ける」ため
-		for (let index = 0; index < node_size; index++) {　// ノードのすべてのエントリー
+		for (let offset = 0; offset < node_size; offset++) {　// ノードのすべてのエントリー
 
-			if (is_empty_entry(records[current_node + index])) { // 空きエントリーなら
+			if (is_empty_entry(records[current_node + offset])) { // 空きエントリーなら
 
-				let grater = records[current_node + index - 1].grater;　// grater側を付け替えて
-				records[current_node + index - 1].grater = null;
+				let grater = records[current_node + offset - 1].grater;　// grater側を付け替えて
+				records[current_node + offset - 1].grater = null;
 
-				records[current_node + index] = {
-					key: key, value: value, lesser: null, grater: grater // アップデート
-				}
+				records[current_node + offset] = {key: key, value: value, lesser: null, grater: grater} // アップデート
 
 				break;
-			} else if (records[current_node + index].key > key) { // 新しいキーより大きな値があったら
+			} else if (records[current_node + offset].key > key) { // 新しいキーより大きな値があったら
 
-				for (let offset = 0; offset < node_size - index - 1; offset++) { // 隙間を開けるため以降のエントリーを取り出す
-					records_buffer[offset] = records[current_node + index + offset];
+				for (let offset = 0; offset < node_size - offset - 1; offset++) { // 隙間を開けるため以降のエントリーを取り出す
+					records_buffer[offset] = records[current_node + offset + offset];
 				}
 
 				let lesser = null; //　lesser側を新しいエントリーに設定
-				if (index == 0) {
+				if (offset == 0) {
 					lesser = records_buffer[0].lesser;
 					records_buffer[0].lesser = null;
 				}
 
 				let grater = null; //　grater側を新しいエントリーに設定
-				if (index == node_size - 1) {
-					grater = records_buffer[node_size - index - 1].grater;
-					records_buffer[node_size - index - 1].grater = null;
+				if (offset == node_size - 1) {
+					grater = records_buffer[node_size - offset - 1].grater;
+					records_buffer[node_size - offset - 1].grater = null;
 				}
 
-				records[current_node + index] = {key: key, value: value, lesser: lesser, grater: grater}; //　データを書き込む
+				records[current_node + offset] = {key: key, value: value, lesser: lesser, grater: grater}; //　データを書き込む
 
-				for (let offset = 0; offset < node_size - index - 1; offset++) { // 取り出したエントリーを隙間を開けて書き込む
-					records[current_node + index + offset + 1] = records_buffer[offset];
+				for (let offset = 0; offset < node_size - offset - 1; offset++) { // 取り出したエントリーを隙間を開けて書き込む
+					records[current_node + offset + offset + 1] = records_buffer[offset];
 				}
 				break;
 			}
@@ -207,33 +171,33 @@ export const insert_entry = (records: Entry[], current_node: number, key: number
 }
 
 export const append_node = (records: Entry[], new_entries: Entry[]): number => {
-	for(let index = 0; index < node_size; index++) {
-         records.push(new_entries[index]);
-     }
-     return last(records);
+	for (let offset = 0; offset < node_size; offset++) {
+		records.push(new_entries[offset]);
+	}
+	return last(records);
 }
-export const create_node = ():Entry[] => {
+export const create_node = (): Entry[] => {
 	const result: Entry[] = [];
-	for (let index = 0 ; index < node_size; index++) {
+	for (let offset = 0; offset < node_size; offset++) {
 		result.push({key: null, value: null, lesser: null, grater: null});
 	}
 	return result;
 }
 
-export const update_node = (records: Entry[], current_node: number,update_entries: Entry[]): void => {
-    for(let index = 0; index < node_size; index++) {
-        records[current_node + index] = update_entries[index];
-    }
+export const update_node = (records: Entry[], current_node: number, update_entries: Entry[]): void => {
+	for (let offset = 0; offset < node_size; offset++) {
+		records[current_node + offset] = update_entries[offset];
+	}
 }
 
 export const lesser_node = (records: Entry[], current_node: number, key: number): Entry[] => {
 	const result: Entry[] = create_node();
 
 	let dist = 0;
-	for (let index = 0; index < node_size; index++) {
-		if (!is_empty_entry(records[current_node + index])) {
-			if (records[current_node + index].key < key) {
-				result[dist++] = records[current_node + index];
+	for (let offset = 0; offset < node_size; offset++) {
+		if (!is_empty_entry(records[current_node + offset])) {
+			if (records[current_node + offset].key < key) {
+				result[dist++] = records[current_node + offset];
 			}
 		} else {
 			break;
@@ -247,10 +211,10 @@ export const grater_node = (records: Entry[], current_node: number, key: number)
 	const result: Entry[] = create_node();
 
 	let dist = 0;
-	for (let index = 0; index < node_size; index++) {
-		if (!is_empty_entry(records[current_node + index])) {
-			if (records[current_node + index].key > key) {
-				result[dist++] = records[current_node + index];
+	for (let offset = 0; offset < node_size; offset++) {
+		if (!is_empty_entry(records[current_node + offset])) {
+			if (records[current_node + offset].key > key) {
+				result[dist++] = records[current_node + offset];
 			}
 		} else {
 			break;
@@ -262,16 +226,16 @@ export const grater_node = (records: Entry[], current_node: number, key: number)
 
 export const split = (records: Entry[], current_node: number, key: number, value: number): number => {
 
-    const lesser_entries:Entry[] = lesser_node(records, current_node, key); // キーより小さいエントリー
-    const grater_entries:Entry[] = grater_node(records, current_node, key); // キーより大きいエントリー
+	const lesser_entries: Entry[] = lesser_node(records, current_node, key); // キーより小さいエントリー
+	const grater_entries: Entry[] = grater_node(records, current_node, key); // キーより大きいエントリー
 
-    const lesser = append_node(records, lesser_entries); // 書き込んで
-    const grater = append_node(records, grater_entries);
+	const lesser = append_node(records, lesser_entries); // 書き込んで
+	const grater = append_node(records, grater_entries);
 
 	const entry: Entry[] = create_node();
 	entry[0] = {key: key, value: value, lesser: lesser - node_size, grater: grater - node_size};
 
-    update_node(records, current_node, entry);　// カレントを更新
+	update_node(records, current_node, entry);　// カレントを更新
 
 	return current_node;
 }
@@ -297,6 +261,40 @@ export const insert = (records: Entry[], current_node: number, key: number, valu
 	return result;
 }
 
+export const erase = (records: Entry[], current_node: number, key: number): number => {
+	let result: number = 0;
+	const [upper_target, target, entry] = find(records, null, current_node, key);
+	if (entry) { // targetにkeyが存在
+
+		if ((entry.lesser == null) && (entry.grater == null)) { // 中間
+			for (let offset = 0; offset < node_size; offset++) {
+				let entry = records[target + offset];
+				if (entry.key == key) {
+					for (; offset < node_size; offset++) {
+						records[target + offset] = records[target + offset + 1];
+					}
+
+					records[target + node_size - 1] = {key: null, value: null, lesser: null, grater: null};  // 空き
+				}
+			}
+		}
 
 
 
+	}
+	return result;
+}
+
+export const Insert = (records: Entry[], key: number, value: number): number => {
+	return insert(records, 0, key, value);
+}
+
+export const Find = (records: Entry[], key: number): Entry => {
+	let result: any = null;
+	const found = find(records, 0, 0, key);
+	const entry = found[2];
+	if (entry) {
+		result = entry;
+	}
+	return result;
+}
