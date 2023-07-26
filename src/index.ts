@@ -20,6 +20,7 @@ const value = 1;
 const lesser = 2;
 const grater = 3;
 
+/*
 let d: any[][] = [
     [150, 3, 1, null],
     [200, 4, null, 2],
@@ -42,24 +43,11 @@ let d: any[][] = [
     [600, 12, null, null],
     [null, null, null, null]
 ];
-
-export const field = (record_no: number): Entry => {
-    const record = d[record_no * 4];
-    return {
-        key: record[key],
-        value: record[value],
-        lesser: record[lesser],
-        grater: record[grater],
-    }
-
-}
-
-
+*/
 
 export const between = (value: number, start: number, end: number): boolean => {
     return ((start < value) && (value < end));
 }
-
 
 export const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry] => {
     const _size = size(records, current_node);  // current_node.length;
@@ -136,6 +124,11 @@ export const size = (records: Entry[], current_node: number): number => {
     return result;
 }
 
+
+export const fill_rate = (records: Entry[], current_node: number): number => {
+    return ( size(records, current_node) / node_size);
+}
+
 export const is_full = (records: Entry[], current_node: number): boolean => {
     return (node_size === size(records, current_node));
 }
@@ -206,6 +199,36 @@ export const insert_entry = (records: Entry[], current_node: number, key: number
 }
 
 export const split = (records: Entry[], current_node: number, key: number, value: number): number => {
+
+    const current: Entry[] = [
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+    ]
+
+    const lesser:Entry[] = [
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+    ]
+
+    const grater:Entry[] = [
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+        {key: null, value: null, lesser: null, grater: null},
+    ]
+
+    const entry: Entry = {key: key, value: value, lesser: null, grater: null};
+
+
+
+
+
+
+
     return current_node;
 }
 
@@ -214,13 +237,13 @@ export const insert = (records: Entry[], current_node: number, key: number, valu
     const [upper_target, target, entry] = find(records, null, current_node, key);
     if (!entry) { // target_nodeに同じキーはない
         if (compare(records, target, key) === -1) { // 子のminより小さい
-            if (!is_full(records, upper_target)) { // 親に空きがある
+            if (fill_rate(records, upper_target) != 1) { // 親に空きがある
                 result = insert_entry(records, upper_target, key, value);
             } else {
                 result = split(records, upper_target, key, value);
             }
         } else {
-            if (!is_full(records, target)) { // 空きがある
+            if (fill_rate(records, target) != 1) { // 空きがある
                 result = insert_entry(records, target, key, value);
             } else {
                 result = split(records, target, key, value);

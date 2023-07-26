@@ -1,7 +1,7 @@
 {
-  "name": "structtransform",
-  "version": "0.0.2",
-  "description": "Use a template to change the value of an object.",
+  "name": "btree",
+  "version": "0.0.1",
+  "description": ".",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -10,13 +10,13 @@
     "prepare": "npm run build",
     "prebuild": "rimraf dist",
     "build": "run-p build:*",
-    "build:common": "tsc",
+    "build_:common": "tsc",
     "build:esm": "tsc -p tsconfig.esm.json",
     "doc": "typedoc src/index.ts --out docs/typedoc"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:7thCode/structtransform.git"
+    "url": "git@github.com:7thCode/btree.git"
   },
   "keywords": [
     "object",
@@ -31,6 +31,7 @@
     "@types/node": "^18.0.0",
     "jest": "^28.1.2",
     "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.1",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.2",
     "typedoc": "^0.23.9",
