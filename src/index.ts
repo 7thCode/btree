@@ -6,11 +6,11 @@
 
 "use strict";
 
-export class Entry {
-	public key: number;
-	public value: number;
-	public lesser: number;
-	public grater: number;
+export interface Entry {
+	 key: any;
+	 value: any;
+	 lesser: any;
+	 grater: any;
 }
 
 const node_size = 4;
@@ -23,7 +23,7 @@ export const between = (value: number, start: number, end: number): boolean => {
 	return ((start < value) && (value < end));
 }
 
-export const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry] => {
+export const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry | null] => {
 	const _size = size(records, current_node);  // current_node.length;
 	for (let offset: number = 0; offset < _size; offset++) {
 		const lesser_entry: Entry = records[current_node + offset];
@@ -242,7 +242,7 @@ export const split = (records: Entry[], current_node: number, key: number, value
 
 export const insert = (records: Entry[], current_node: number, key: number, value: number): number => {
 	let result: number = 0;
-	const [upper_target, target, entry] = find(records, null, current_node, key);
+	const [upper_target, target, entry] = find(records, 0, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
 		if (compare(records, target, key) === -1) { // 子のminより小さい
 			if (fill_rate(records, upper_target) != 1) { // 親に空きがある
@@ -263,7 +263,7 @@ export const insert = (records: Entry[], current_node: number, key: number, valu
 
 export const erase = (records: Entry[], current_node: number, key: number): number => {
 	let result: number = 0;
-	const [upper_target, target, entry] = find(records, null, current_node, key);
+	const [upper_target, target, entry] = find(records, 0, current_node, key);
 	if (entry) { // targetにkeyが存在
 
 		if ((entry.lesser == null) && (entry.grater == null)) { // 中間
