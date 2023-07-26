@@ -13,7 +13,7 @@ export class Entry {
 	public grater: number;
 }
 
-const node_size = 4;
+const node_size = 12;
 
 const key = 0;
 const value = 1;
@@ -102,6 +102,9 @@ export const find = (records: Entry[], upper_node: number, current_node: number,
 }
 
 export const is_empty_entry = (entry: Entry): boolean => {
+	if (!entry) {
+		const hoge = 1;
+	}
 	return (entry.key == null &&
 		entry.value == null &&
 		entry.lesser == null &&
@@ -160,7 +163,7 @@ export const insert_entry = (records: Entry[], current_node: number, key: number
 	if (is_empty_node(records, current_node)) { // 空きノード
 		records[current_node] = {key: key, value: value, lesser: null, grater: null}
 	} else {
-		const records_buffer: Entry[] = []; // Entryに「隙間を開ける」ため
+		const records_buffer: Entry[] = create_node(); // Entryに「隙間を開ける」ため
 		for (let index = 0; index < node_size; index++) {　// ノードのすべてのエントリー
 
 			if (is_empty_entry(records[current_node + index])) { // 空きエントリーなら
@@ -203,31 +206,28 @@ export const insert_entry = (records: Entry[], current_node: number, key: number
 	return current_node;
 }
 
-export const append_node = (records: Entry[], new_node: Entry[]): number => {
-     new_node.forEach((entry) => {
-         records.push(entry);
-     });
+export const append_node = (records: Entry[], new_entries: Entry[]): number => {
+	for(let index = 0; index < node_size; index++) {
+         records.push(new_entries[index]);
+     }
      return last(records);
+}
+export const create_node = ():Entry[] => {
+	const result: Entry[] = [];
+	for (let index = 0 ; index < node_size; index++) {
+		result.push({key: null, value: null, lesser: null, grater: null});
+	}
+	return result;
 }
 
 export const update_node = (records: Entry[], current_node: number,update_entries: Entry[]): void => {
-
     for(let index = 0; index < node_size; index++) {
         records[current_node + index] = update_entries[index];
     }
-
-
-
 }
 
 export const lesser_node = (records: Entry[], current_node: number, key: number): Entry[] => {
-
-	const result: Entry[] = [
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-	]
+	const result: Entry[] = create_node();
 
 	let dist = 0;
 	for (let index = 0; index < node_size; index++) {
@@ -244,12 +244,7 @@ export const lesser_node = (records: Entry[], current_node: number, key: number)
 
 export const grater_node = (records: Entry[], current_node: number, key: number): Entry[] => {
 
-	const result: Entry[] = [
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-		{key: null, value: null, lesser: null, grater: null},
-	]
+	const result: Entry[] = create_node();
 
 	let dist = 0;
 	for (let index = 0; index < node_size; index++) {
@@ -267,20 +262,16 @@ export const grater_node = (records: Entry[], current_node: number, key: number)
 
 export const split = (records: Entry[], current_node: number, key: number, value: number): number => {
 
-    const lesser_entries:Entry[] = lesser_node(records, current_node, key);
-    const grater_entries:Entry[] = grater_node(records, current_node, key);
+    const lesser_entries:Entry[] = lesser_node(records, current_node, key); // キーより小さいエントリー
+    const grater_entries:Entry[] = grater_node(records, current_node, key); // キーより大きいエントリー
 
-    const lesser = append_node(records, lesser_entries);
+    const lesser = append_node(records, lesser_entries); // 書き込んで
     const grater = append_node(records, grater_entries);
 
-	const entry: Entry[] = [
-        {key: key, value: value, lesser: lesser - node_size, grater: grater - node_size},
-        {key: null, value: null, lesser: null, grater: null},
-        {key: null, value: null, lesser: null, grater: null},
-        {key: null, value: null, lesser: null, grater: null},
-    ]
+	const entry: Entry[] = create_node();
+	entry[0] = {key: key, value: value, lesser: lesser - node_size, grater: grater - node_size};
 
-    update_node(records, current_node, entry);
+    update_node(records, current_node, entry);　// カレントを更新
 
 	return current_node;
 }

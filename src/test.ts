@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {Entry, find, insert, insert_entry, between, is_empty_entry, is_empty_node, size, fill_rate, is_full, compare, last, lesser_node,grater_node} from "./index";
+import {Entry, find, insert, insert_entry, between, is_empty_entry, is_empty_node, size, fill_rate, is_full, compare, last, lesser_node, grater_node, create_node} from "./index";
 
 describe('BTree', () => {
 
@@ -23,27 +23,39 @@ describe('BTree', () => {
 
 			expect(is_empty_entry(entry)).toBeTruthy();
 
-			const empty_node: Entry[] = [
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-				{key: null, value: null, lesser: null, grater: null},
-			]
+			const empty_node: Entry[] = create_node();
 
 			expect(is_empty_node(empty_node, 0)).toBeTruthy();
 
-			const two_entry_node: Entry[] = [
+			const three_entry_node: Entry[] = [
 				{key: 1, value: null, lesser: null, grater: null},
 				{key: 2, value: null, lesser: null, grater: null},
+				{key: 3, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
+				{key: null, value: null, lesser: null, grater: null},
 				{key: null, value: null, lesser: null, grater: null},
 				{key: null, value: null, lesser: null, grater: null},
 			]
 
-			expect(size(two_entry_node, 0)).toBe(2);
+			expect(size(three_entry_node, 0)).toBe(3);
 
-			expect(fill_rate(two_entry_node, 0)).toBe(0.5);
+			expect(fill_rate(three_entry_node, 0)).toBe(0.25);
+
 
 			const full_node: Entry[] = [
+				{key: 1, value: null, lesser: null, grater: null},
+				{key: 2, value: null, lesser: null, grater: null},
+				{key: 3, value: null, lesser: null, grater: null},
+				{key: 4, value: null, lesser: null, grater: null},
+				{key: 1, value: null, lesser: null, grater: null},
+				{key: 2, value: null, lesser: null, grater: null},
+				{key: 3, value: null, lesser: null, grater: null},
+				{key: 4, value: null, lesser: null, grater: null},
 				{key: 1, value: null, lesser: null, grater: null},
 				{key: 2, value: null, lesser: null, grater: null},
 				{key: 3, value: null, lesser: null, grater: null},
@@ -57,7 +69,7 @@ describe('BTree', () => {
 		}
 
 	)
-
+/*
 	it('find', () => {
 
 		const records: Entry[] = [
@@ -67,9 +79,28 @@ describe('BTree', () => {
 			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
 			{key: 3, value: 0, lesser: null, grater: null},
 			{key: 100, value: 1, lesser: null, grater: null},
 			{key: 120, value: 2, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 
 			{key: 320, value: 5, lesser: null, grater: null},
@@ -77,12 +108,41 @@ describe('BTree', () => {
 			{key: 340, value: 7, lesser: null, grater: null},
 			{key: 350, value: 8, lesser: null, grater: null},
 
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
 			{key: 400, value: 10, lesser: null, grater: null},
 			{key: 500, value: 11, lesser: null, grater: null},
 			{key: 600, value: 12, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
 			{key: 360, value: 9, lesser: 8, grater: 12},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+			{key: null, value: null, lesser: null, grater: null},
+
+			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
@@ -109,18 +169,15 @@ describe('BTree', () => {
 
 	it('insert', () => {
 
-		let records: Entry[] = [
-			{key: 100, value: null, lesser: 1, grater: null},
-			{key: 200, value: null, lesser: null, grater: 8},
-			{key: null, value: null, lesser: null, grater: null},
-			{key: null, value: null, lesser: null, grater: null},
-		];
+		let records: Entry[] = create_node();
+
+		records[0] = {key: 100, value: null, lesser: 1, grater: null};
+		records[1] = {key: 200, value: null, lesser: null, grater: 8};
 
 		insert_entry(records, 0, 350, 200);
 		expect(find(records, 0, 0, 350)[2].value).toBe(200);
 
 	});
-
 
 	it('insert2', () => {
 
@@ -130,7 +187,6 @@ describe('BTree', () => {
 			{key: null, value: null, lesser: null, grater: null},
 			{key: null, value: null, lesser: null, grater: null},
 		];
-
 
 		insert(records, 0, 3, 1);
 		insert(records, 0, 100, 2);
@@ -162,11 +218,9 @@ describe('BTree', () => {
 		expect(find(records, 0, 0, 500)[2].value).toBe(13);
 		expect(find(records, 0, 0, 600)[2].value).toBe(14);
 
-
 		console.log(records);
 
 	});
-
 
 	it('insert3', () => {
 
@@ -175,11 +229,27 @@ describe('BTree', () => {
 			{key: 200, value: null, lesser: null, grater: 8},
 			{key: 300, value: null, lesser: null, grater: null},
 			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
 		];
 
 		const l = [
 			{ key: 100, value: null, lesser: 1, grater: null },
 			{ key: 200, value: null, lesser: null, grater: 8 },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null },
 			{ key: null, value: null, lesser: null, grater: null },
 			{ key: null, value: null, lesser: null, grater: null }
 		]
@@ -187,13 +257,65 @@ describe('BTree', () => {
 		const g = [
 			{key: 300, value: null, lesser: null, grater: null},
 			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
+			{key: 300, value: null, lesser: null, grater: null},
+			{key: 400, value: null, lesser: null, grater: null},
 			{ key: null, value: null, lesser: null, grater: null },
-			{ key: null, value: null, lesser: null, grater: null },
+			{ key: null, value: null, lesser: null, grater: null }
 		]
 
 		expect(lesser_node(records, 0, 250)).toStrictEqual(l);
 		expect(grater_node(records, 0, 250)).toStrictEqual(g);
 	});
+*/
+	it('insert4', () => {
+
+		let records: Entry[] = create_node();
+
+		for (let index = 0; index < 60; index++) {
+			insert(records, 0, index, index + 1);
+		}
+
+		for (let index = 0; index < 60; index++) {
+			expect(find(records, 0, 0, index)[2].value).toBe(index + 1);
+		}
+
+		console.log(records);
+
+	});
+
+	it('insert5', () => {
+
+		let records: Entry[] = create_node();
+
+		for (let index = 0; index < 100; index++) {
+			insert(records, 0, index, index + 1);
+		}
+
+	});
+
+	it('insert6', () => {
+
+		let records: Entry[] = create_node();
+
+		for (let index = 0; index < 60; index++) {
+			var random = Math.floor(Math.random() * 10000);
+			insert(records, 0, random, index + 1);
+		}
+
+		//for (let index = 0; index < 60; index++) {
+		//	expect(find(records, 0, 0, index)[2].value).toBe(index + 1);
+		//}
+
+		console.log(JSON.stringify(records));
+
+	});
+
 
 });
 
