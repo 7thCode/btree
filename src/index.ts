@@ -13,7 +13,7 @@ export interface Entry {
 	 grater: any;
 }
 
-const node_size = 100;
+const node_size = 4;
 
 export const last = (records: Entry[]): number => {
 	return records.length;
@@ -97,7 +97,6 @@ export const size = (records: Entry[], current_node: number): number => {
 	}
 	return result;
 }
-
 
 export const fill_rate = (records: Entry[], current_node: number): number => {
 	return (size(records, current_node) / node_size);
@@ -244,19 +243,23 @@ export const insert = (records: Entry[], current_node: number, key: number, valu
 	let result: number = 0;
 	const [upper_target, target, entry] = find(records, 0, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
-//		if (compare(records, target, key) === -1) { // minより小さい
-		//	if (fill_rate(records, upper_target) != 1) { // 親に空きがある
-		//		result = insert_entry(records, upper_target, key, value);
-		//	} else {
-//				result = split(records, target, key, value);
-		//	}
-//		} else {
+		if (compare(records, target, key) === -1) { // minより小さい
+			if (upper_target) {
+				if (fill_rate(records, upper_target) != 1) { // 親に空きがある
+					result = insert_entry(records, upper_target, key, value);
+				} else {
+					result = split_node(records, target, key, value);
+				}
+			} else {
+				result = split_node(records, target, key, value);
+			}
+		} else {
 			if (fill_rate(records, target) != 1) { // 空きがある
 				result = insert_entry(records, target, key, value);
 			} else {
 				result = split_node(records, target, key, value);
 			}
-//		}
+		}
 	}
 	return result;
 }
