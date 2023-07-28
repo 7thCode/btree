@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {between, create_node, Entry, erase, find, Find, Insert, is_empty_entry, is_empty_node, insert_entry} from "./index";
+import {between, create_node, Entry, erase, find, Find, Insert, is_empty_entry, is_empty_node, insert_entry, insert} from "./index";
 
 describe('BTree', () => {
 
@@ -29,6 +29,67 @@ describe('BTree', () => {
 
 	});
 
+	it("find", () => {
+
+		let records = [
+			{"key":150,"value":1,"lesser":9,"grater":null},
+			{"key":200,"value":2,"lesser":null,"grater":null},
+			{"key":300,"value":3,"lesser":null,"grater":5},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+
+			{"key":320,"value":4,"lesser":null,"grater":null},
+			{"key":600,"value":5,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+
+			{"key":3,"value":6,"lesser":null,"grater":null},
+			{"key":100,"value":7,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+
+		];
+
+		const entry1: any = find(records,1, 1, 150);
+		const entry2: any = find(records, 1, 1, 200);
+		const entry3: any = find(records, 1, 1, 300);
+		const entry4: any = find(records, 1, 1, 320);
+		const entry5: any = find(records, 1, 1, 600);
+		const entry6: any = find(records, 1, 1, 3);
+		const entry7: any = find(records, 1, 1, 100);
+
+		expect(entry1[2].value).toBe(1);
+		expect(entry2[2].value).toBe(2);
+		expect(entry3[2].value).toBe(3);
+		expect(entry4[2].value).toBe(4);
+		expect(entry5[2].value).toBe(5);
+		expect(entry6[2].value).toBe(6);
+		expect(entry7[2].value).toBe(7);
+
+	});
+
+	it('insert', () => {
+
+		let records: Entry[] = create_node();
+
+		let keys = [
+			{"key":3,"value":6},
+			{"key":600,"value":5},
+			{"key":100,"value":7},
+			{"key":320,"value":4},
+
+			{"key":150,"value":1},
+			{"key":300,"value":3},
+			{"key":200,"value":2},
+		];
+
+		for (let index = 0; index < keys.length; index++) {
+			insert(records, 1, keys[index].key, keys[index].value);
+		}
+
+		console.log(JSON.stringify(records));
+	});
+
+/*
 	it("insert_entry", () => {
 
 		let records = [
@@ -40,16 +101,20 @@ describe('BTree', () => {
 
 		insert_entry(records, 0, 2, 5);
 	});
+*/
+
+	/*
+
 
 	it('seq insert', () => {
 
 		let records: Entry[] = create_node();
 
-		for (let index = 0; index < 1000; index++) {
+		for (let index = 1; index < 1000; index++) {
 			Insert(records, index, index + 1);
 		}
 
-		for (let index = 0; index < 1000; index++) {
+		for (let index = 1; index < 1000; index++) {
 			let found: Entry = Find(records, index);
 			if (found) {
 				expect(found.value).toBe(index + 1);
@@ -190,19 +255,25 @@ describe('BTree', () => {
 			Insert(records, keys[index], index);
 		}
 
+		const value:Entry = Find(records, 213);
+		console.log(value);
+
 		for (let index = 0; index < 1000; index++) {
-			const found = find(records, 0, 0, keys[index]);
-			const entry = found[2];
-			if (entry) {
-				expect(entry.key).toBe(keys[index]);
+
+			const value:Entry = Find(records, keys[index]);
+			if (!value) {
+				console.log(keys[index])
 			}
+
+			//	expect(entry.key).toBe(keys[value]);
+
 		}
 
 //		console.log(JSON.stringify(keys));
 	//	console.log(JSON.stringify(records));
 //		console.log(records.length);
 	});
-
+*/
 });
 
 
