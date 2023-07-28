@@ -76,17 +76,39 @@ describe('BTree', () => {
 			{"key":600,"value":5},
 			{"key":100,"value":7},
 			{"key":320,"value":4},
-
 			{"key":150,"value":1},
 			{"key":300,"value":3},
 			{"key":200,"value":2},
 		];
 
 		for (let index = 0; index < keys.length; index++) {
+
+			if (index === 5) {
+				const a =1;
+			}
+
 			insert(records, 1, keys[index].key, keys[index].value);
 		}
 
 		console.log(JSON.stringify(records));
+		/*
+		const entry1: any = find(records,1, 1, 150);
+		const entry2: any = find(records, 1, 1, 200);
+		const entry3: any = find(records, 1, 1, 300);
+		const entry4: any = find(records, 1, 1, 320);
+		const entry5: any = find(records, 1, 1, 600);
+		const entry6: any = find(records, 1, 1, 3);
+		const entry7: any = find(records, 1, 1, 100);
+
+		expect(entry1[2].value).toBe(1);
+		expect(entry2[2].value).toBe(2);
+		expect(entry3[2].value).toBe(3);
+		expect(entry4[2].value).toBe(4);
+		expect(entry5[2].value).toBe(5);
+		expect(entry6[2].value).toBe(6);
+		expect(entry7[2].value).toBe(7);
+
+*/
 	});
 
 /*
