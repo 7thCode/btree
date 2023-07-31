@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {between, create_node, Entry, erase, find, Find, Insert, is_empty_entry, is_empty_node, insert_entry, insert} from "./index";
+import {create_node, Entry, erase_entry, Find, Insert} from "./index";
 
 describe('BTree', () => {
 /*
@@ -29,6 +29,7 @@ describe('BTree', () => {
 
 	});
 */
+
 	it("find", () => {
 
 		let records = [
@@ -49,21 +50,21 @@ describe('BTree', () => {
 
 		];
 
-		const entry1: any = find(records,1, 1, 150);
-		const entry2: any = find(records, 1, 1, 200);
-		const entry3: any = find(records, 1, 1, 300);
-		const entry4: any = find(records, 1, 1, 320);
-		const entry5: any = find(records, 1, 1, 600);
-		const entry6: any = find(records, 1, 1, 3);
-		const entry7: any = find(records, 1, 1, 100);
+		const entry1: any = Find(records, 150);
+		const entry2: any = Find(records,  200);
+		const entry3: any = Find(records,  300);
+		const entry4: any = Find(records, 320);
+		const entry5: any = Find(records,  600);
+		const entry6: any = Find(records,  3);
+		const entry7: any = Find(records,  100);
 
-		expect(entry1[2].value).toBe(1);
-		expect(entry2[2].value).toBe(2);
-		expect(entry3[2].value).toBe(3);
-		expect(entry4[2].value).toBe(4);
-		expect(entry5[2].value).toBe(5);
-		expect(entry6[2].value).toBe(6);
-		expect(entry7[2].value).toBe(7);
+		expect(entry1.value).toBe(1);
+		expect(entry2.value).toBe(2);
+		expect(entry3.value).toBe(3);
+		expect(entry4.value).toBe(4);
+		expect(entry5.value).toBe(5);
+		expect(entry6.value).toBe(6);
+		expect(entry7.value).toBe(7);
 
 	});
 
@@ -82,44 +83,29 @@ describe('BTree', () => {
 		];
 
 		for (let index = 0; index < keys.length; index++) {
-			insert(records, 1, keys[index].key, keys[index].value);
+			Insert(records,  keys[index].key, keys[index].value);
 		}
 
-		//console.log(JSON.stringify(records));
+		console.log(JSON.stringify(records));
 
-		const entry1: any = find(records,1, 1, 150);
-		const entry2: any = find(records, 1, 1, 200);
-		const entry3: any = find(records, 1, 1, 300);
-		const entry4: any = find(records, 1, 1, 320);
-		const entry5: any = find(records, 1, 1, 600);
-		const entry6: any = find(records, 1, 1, 3);
-		const entry7: any = find(records, 1, 1, 100);
+		const entry1: any = Find(records, 150);
+		const entry2: any = Find(records,  200);
+		const entry3: any = Find(records,  300);
+		const entry4: any = Find(records,  320);
+		const entry5: any = Find(records,  600);
+		const entry6: any = Find(records,  3);
+		const entry7: any = Find(records,  100);
 
-		expect(entry1[2].value).toBe(1);
-		expect(entry2[2].value).toBe(2);
-		expect(entry3[2].value).toBe(3);
-		expect(entry4[2].value).toBe(4);
-		expect(entry5[2].value).toBe(5);
-		expect(entry6[2].value).toBe(6);
-		expect(entry7[2].value).toBe(7);
+		expect(entry1.value).toBe(1);
+		expect(entry2.value).toBe(2);
+		expect(entry3.value).toBe(3);
+		expect(entry4.value).toBe(4);
+		expect(entry5.value).toBe(5);
+		expect(entry6.value).toBe(6);
+		expect(entry7.value).toBe(7);
 
-
+//		console.log(JSON.stringify(records));
 	});
-
-/*
-	it("insert_entry", () => {
-
-		let records = [
-			{"key":1,"value":1,"lesser":null,"grater":null},
-			{"key":3,"value":2,"lesser":null,"grater":null},
-			{"key":5,"value":3,"lesser":null,"grater":null},
-			{"key":null,"value":null,"lesser":null,"grater":null},
-		];
-
-		insert_entry(records, 0, 2, 5);
-	});
-*/
-
 
 	it('seq insert', () => {
 
@@ -136,9 +122,7 @@ describe('BTree', () => {
 			}
 		}
 
-		console.log(JSON.stringify(records));
 	});
-
 
 	it('random insert', () => {
 
@@ -150,11 +134,8 @@ describe('BTree', () => {
 		}
 
 		for (let index = 0; index < 50; index++) {
-			const found = find(records, 1, 1, keys[index]);
-			const entry = found[2];
-			if (entry) {
-				expect(entry.key).toBe(keys[index]);
-			}
+			const found: Entry = Find(records,  keys[index]);
+			expect(found.key).toBe(keys[index]);
 		}
 
 	});
@@ -282,7 +263,6 @@ describe('BTree', () => {
 		console.log(records.length);
 	});
 
-
 	it('random insert 3', () => {
 
 		let records: Entry[] = create_node();
@@ -290,7 +270,10 @@ describe('BTree', () => {
 		const keys :number[] = [];
 
 		for (let index = 0; index < 1000; index++) {
-			keys.push(Math.floor(Math.random() * 1000))
+			const new_key = Math.floor(Math.random() * 1000);
+			if (!keys.find(a => a === new_key))  {
+				keys.push(new_key)
+			}
 		}
 
 		for (let index = 0; index < keys.length; index++) {
@@ -304,11 +287,34 @@ describe('BTree', () => {
 			}
 		}
 
-//		console.log(JSON.stringify(keys));
-//		console.log(JSON.stringify(records));
+		console.log(keys.length);
 		console.log(records.length);
 	});
 
+	it('erase', () => {
+
+		let records = [
+			{"key":150,"value":1,"lesser":9,"grater":null},
+			{"key":200,"value":2,"lesser":null,"grater":null},
+			{"key":300,"value":3,"lesser":null,"grater":5},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+
+			{"key":320,"value":4,"lesser":null,"grater":null},
+			{"key":600,"value":5,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+
+			{"key":3,"value":6,"lesser":null,"grater":null},
+			{"key":100,"value":7,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+			{"key":null,"value":null,"lesser":null,"grater":null},
+		];
+
+		erase_entry(records,  1,200);
+
+		console.log(JSON.stringify(records));
+
+	});
 
 	it('test', () => {
 
