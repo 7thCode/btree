@@ -13,7 +13,7 @@ export interface Entry {
 	grater: any;
 }
 
-const node_size = 4;
+const node_size = 100;
 
 export const last = (records: Entry[]): number => {
 	return records.length;
@@ -22,55 +22,6 @@ export const last = (records: Entry[]): number => {
 export const between = (value: number, start: number, end: number): boolean => {
 	return ((start < value) && (value < end));
 }
-
-/*
-export const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry | null] => {
-	const _size = size(records, current_node);  // current_node.length;
-	for (let offset: number = 0; offset < _size; offset++) {
-		const lesser_entry: Entry = records[current_node + offset - 1];
-
-		// 先頭、中間
-		if (offset < _size - 1) {
-			const grater_entry: Entry = records[current_node + (offset + 1) - 1];
-
-			if (find_key === grater_entry.key) {
-				return [upper_node, current_node, grater_entry];
-			}
-
-			if (between(find_key, lesser_entry.key, grater_entry.key)) {
-				if (grater_entry.lesser) {
-					return find(records, current_node, grater_entry.lesser, find_key);
-				}
-			}
-
-			if (find_key > grater_entry.key) {
-				if (grater_entry.grater) {
-					return find(records, current_node, grater_entry.grater, find_key);
-				}
-			}
-		}
-
-		// 先頭、中間、終端
-		if (find_key === lesser_entry.key) {
-			return [upper_node, current_node, lesser_entry];
-		}
-
-		if (find_key < lesser_entry.key) {
-			if (lesser_entry.lesser) {
-				return find(records, current_node, lesser_entry.lesser, find_key);
-			}
-		}
-
-		if (find_key > lesser_entry.key) {
-			if (lesser_entry.grater) {
-				return find(records, current_node, lesser_entry.grater, find_key);
-			}
-		}
-
-	}
-	return [upper_node, current_node, null];
-}
-*/
 
 const size_to_index = (size: number) => {
 	return size - 1;
@@ -99,7 +50,7 @@ export const find = (records: Entry[], upper_node: number, current_node: number,
 			}
 		}
 	}
-	return [upper_node, current_node, null];
+	return [0, current_node, null];
 }
 
 export const is_empty_entry = (entry: Entry): boolean => {
@@ -332,7 +283,7 @@ export const Insert = (records: Entry[], key: number, value: number): number => 
 
 export const Find = (records: Entry[], key: number): Entry => {
 	let result: any = null;
-	const found = find(records, 1, 1, key);
+	const found = find(records, 0, 1, key);
 	const entry = found[2];
 	if (entry) {
 		result = entry;
