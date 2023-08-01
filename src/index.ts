@@ -15,6 +15,8 @@ export interface Entry {
 
 const node_size = 4;
 
+let hoge = 0;
+
 const last = (records: Entry[]): number => {
 	return records.length;
 }
@@ -31,26 +33,30 @@ const to_index = (size: number) => {
 	return size - 1;
 }
 
-const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry | null] => {
+const find = (records: Entry[], current_node: number, find_key: number): [ number, Entry | null] => {
+//	console.log(upper_node, current_node, find_key);
 	const _size = size(records, current_node);  // current_node.length;
 	if (_size > 0) {
 		const first = records[to_index(current_node)];
 		const last = records[to_index(current_node) + size_to_index(_size)];
 
 		if (!is_empty_entry(first) && (find_key < first.key) && first.lesser) {
-			return find(records, current_node, first.lesser, find_key);
+
+			return find(records, first.lesser, find_key);
 		} else if (!is_empty_entry(last) && (last.key < find_key) && last.grater) {
-			return find(records, current_node, last.grater, find_key);
+			return find(records, last.grater, find_key);
 		} else {
+			// scan node
 			for (let offset: number = 0; offset < _size; offset++) {
 				const target_entry: Entry = records[to_index(current_node) + offset];
 				if (find_key === target_entry.key) {
-					return [upper_node, current_node, target_entry];
+					return [ current_node, target_entry];
 				}
 			}
+			hoge = current_node;
 		}
 	}
-	return [upper_node, current_node, null];
+	return [current_node, null];
 }
 
 const is_empty_entry = (entry: Entry): boolean => {
@@ -166,24 +172,47 @@ const insert_entry = (records: Entry[], current_node: number, key: number, value
 	return current_node;
 }
 
-export const erase_entry = (records: Entry[], current_node: number, key: number): number => {
+export const erase_entry = (records: Entry[], current_node: number, key: number): boolean => {
 
+	let result:boolean = false;
 	const lesser: Entry[] = lesser_entries(records, current_node, key); // キーより小さいエントリー
 	const grater: Entry[] = grater_entries(records, current_node, key); // キーより大きいエントリー
 
-	let offset = 0;
-	for (let lesser_size = 0; lesser_size < lesser.length; lesser_size++, offset++) {
-		records[(current_node - 1) + offset] = lesser[lesser_size];
+	if (is_empty_node(records,current_node)) { // Empty
+
+	} else if (lesser.length === 0) { // 先頭
+		const min = min_entry(records, current_node);
+		if (min) {
+			for (let grater_offset = 0; grater_offset < grater.length; grater_offset++) {
+				records[(current_node - 1) + grater_offset] = grater[grater_offset];
+			}
+			records[(current_node - 1)].lesser = min.lesser;
+		}
+		result = true;
+	} else if (grater.length === 0) { // 終端
+		const max = max_entry(records, current_node);
+		if (max) {
+			for (let lesser_offset = 0; lesser_offset < lesser.length; lesser_offset++) {
+				records[(current_node - 1) + lesser_offset] = lesser[lesser_offset];
+			}
+			records[(current_node - 1)].lesser = max.grater;
+		}
+		result = true;
+	} else { // 中間
+		let offset = 0;
+		for (let lesser_offset = 0; lesser_offset < lesser.length; lesser_offset++, offset++) {
+			records[(current_node - 1) + offset] = lesser[lesser_offset];
+		}
+
+		for (let grater_offset = 0; grater_offset < grater.length; grater_offset++, offset++) {
+			records[(current_node - 1) + offset] = grater[grater_offset];
+		}
+
+		records[(current_node - 1) + offset] = {key: null, value: null, lesser: null, grater: null};
+
+		result = true;
 	}
 
-	offset -= 1;
-
-	for (let grater_size = 0; grater_size < grater.length; grater_size++, offset++) {
-		records[(current_node - 1) + offset] = grater[grater_size];
-	}
-
-	offset += 1;
-	records[(current_node - 1) + offset] = {key: null, value: null, lesser: null, grater: null}
 
 	/*
 			let _size = size(records,current_node);
@@ -207,13 +236,13 @@ export const erase_entry = (records: Entry[], current_node: number, key: number)
 
 		*/
 
-	return current_node;
+	return result;
 }
 
 
 export const erase = (records: Entry[], current_node: number, key: number): number => {
 	let result: number = 0;
-	const [upper_target, target, entry] = find(records, 0, current_node, key);
+	const [target, entry] = find(records,  current_node, key);
 	if (entry) { // targetにkeyが存在
 		if ((entry.lesser == null) && (entry.grater == null)) { // 中間
 			for (let offset = 0; offset < node_size; offset++) {
@@ -325,7 +354,7 @@ const split_node = (records: Entry[], current_node: number, key: number, value: 
 
 const insert = (records: Entry[], current_node: number, key: number, value: number): number => {
 	let result: number = 0;
-	const [upper_target_record, target_record, entry] = find(records, 1, current_node, key);
+	const [target_record, entry] = find(records, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
 		if (target_record === 1) { // root
 			if (fill_rate(records, 1) != 1) { // 空きがある
@@ -336,29 +365,55 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 		} else if (is_empty_node(records, target_record)) {  // empty
 			result = insert_entry(records, target_record, key, value);
 		} else if (compare(records, target_record, key) === -1) { // minより小さい
-			const min: Entry | null = min_entry(records, target_record)
-			if (min) {
-				if (min.lesser) {
-					if (fill_rate(records, min.lesser) != 1) { // 空きがある
-						result = insert_entry(records, min.lesser, key, value);
+			if (fill_rate(records, target_record) != 1) { // 空きがある
+				result = insert_entry(records, target_record, key, value);
+			} else {
+				const min: Entry | null = min_entry(records, target_record);
+				if (min) {
+					if (min.lesser) {
+						if (fill_rate(records, min.lesser) != 1) { // 空きがある
+							result = insert_entry(records, min.lesser, key, value);
+						} else {
+							result = split_node(records, min.lesser, key, value);
+						}
 					} else {
-						result = split_node(records, min.lesser, key, value);
+						const test:boolean = true;
+						if (test) {
+
+							// upper_target_record => currentの直接の親
+
+							const upper_target_record = hoge;
+								if (upper_target_record) {
+									if (fill_rate(records, upper_target_record) != 1) { // 空きがある
+										result = insert_entry(records, upper_target_record, key, value);
+									} else {
+										result = split_node(records, target_record, key, value);
+									}
+								} else {
+									result = split_node(records, target_record, key, value);
+								}
+
+						} else {
+							result = split_node(records, target_record, key, value);
+						}
 					}
-				} else {
-					result = split_node(records, target_record, key, value);
 				}
 			}
 		} else if (compare(records, target_record, key) === 1) { // maxより大きい
-			const max: Entry | null = min_entry(records, target_record)
-			if (max) {
-				if (max.grater) {
-					if (fill_rate(records, max.grater) != 1) { //空きがある
-						result = insert_entry(records, max.grater, key, value);
+			if (fill_rate(records, target_record) != 1) { // 空きがある
+				result = insert_entry(records, target_record, key, value);
+			} else {
+				const max: Entry | null = min_entry(records, target_record)
+				if (max) {
+					if (max.grater) {
+						if (fill_rate(records, max.grater) != 1) { //空きがある
+							result = insert_entry(records, max.grater, key, value);
+						} else {
+							result = split_node(records, max.grater, key, value);
+						}
 					} else {
-						result = split_node(records, max.grater, key, value);
+						result = split_node(records, target_record, key, value);
 					}
-				} else {
-					result = split_node(records, target_record, key, value);
 				}
 			}
 		} else { // 中間
@@ -378,8 +433,8 @@ export const Insert = (records: Entry[], key: number, value: number): number => 
 
 export const Find = (records: Entry[], key: number): Entry => {
 	let result: any = null;
-	const found = find(records, 0, 1, key);
-	const entry = found[2];
+	const found = find(records, 1, key);
+	const entry = found[1];
 	if (entry) {
 		result = entry;
 	}
