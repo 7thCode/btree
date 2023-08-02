@@ -41,9 +41,9 @@ const find = (records: Entry[], current_node: number, find_key: number): [number
 		const last = records[to_index(current_node) + size_to_index(_size)];
 
 		if (!is_empty_entry(first) && (find_key < first.key) && first.lesser) {
-
 			return find(records, first.lesser, find_key);
 		} else if (!is_empty_entry(last) && (last.key < find_key) && last.grater) {
+			upper_target_node = current_node;
 			return find(records, last.grater, find_key);
 		} else {
 			// scan node
@@ -53,7 +53,7 @@ const find = (records: Entry[], current_node: number, find_key: number): [number
 					return [current_node, target_entry];
 				}
 			}
-			upper_target_node = current_node;
+
 		}
 	}
 	return [current_node, null];
@@ -104,7 +104,7 @@ const compare = (records: Entry[], current_node: number, key: number): number =>
 		if (key < min.key) {
 			result = -1;
 		} else if (max.key < key) {
-			result = -1;
+			result = 1;
 		}
 	}
 	return result;
@@ -212,7 +212,6 @@ export const erase_entry = (records: Entry[], current_node: number, key: number)
 
 		result = true;
 	}
-
 
 	/*
 			let _size = size(records,current_node);
@@ -354,21 +353,21 @@ const split_node = (records: Entry[], current_node: number, key: number, value: 
 
 const insert = (records: Entry[], current_node: number, key: number, value: number): number => {
 	let result: number = 0;
-	const [target_record, entry] = find(records, current_node, key);
+	const [target_node, entry] = find(records, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
-		if (target_record === 1) { // root
+		if (target_node === 1) { // root
 			if (fill_rate(records, 1) != 1) { // 空きがある
 				result = insert_entry(records, 1, key, value);
 			} else {
 				result = split_node(records, 1, key, value);
 			}
-		} else if (is_empty_node(records, target_record)) {  // empty
-			result = insert_entry(records, target_record, key, value);
-		} else if (compare(records, target_record, key) === -1) { // minより小さい
-			if (fill_rate(records, target_record) != 1) { // 空きがある
-				result = insert_entry(records, target_record, key, value);
+		} else if (is_empty_node(records, target_node)) {  // empty
+			result = insert_entry(records, target_node, key, value);
+		} else if (compare(records, target_node, key) === -1) { // minより小さい
+			if (fill_rate(records, target_node) != 1) { // 空きがある
+				result = insert_entry(records, target_node, key, value);
 			} else {
-				const min: Entry | null = min_entry(records, target_record);
+				const min: Entry | null = min_entry(records, target_node);
 				if (min) {
 					if (min.lesser) {
 						if (fill_rate(records, min.lesser) != 1) { // 空きがある
@@ -377,30 +376,30 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 							result = split_node(records, min.lesser, key, value);
 						}
 					} else {
-						const test: boolean = true;
+						const test: boolean = false;
 						if (test) {
-							// upper_target_record => currentの直接の親
+							// target_node => currentの直接の親
 							if (upper_target_node) {
 								if (fill_rate(records, upper_target_node) != 1) { // 空きがある
 									result = insert_entry(records, upper_target_node, key, value);
 								} else {
-									result = split_node(records, target_record, key, value);
+									result = split_node(records, target_node, key, value);
 								}
 							} else {
-								result = split_node(records, target_record, key, value);
+								result = split_node(records, target_node, key, value);
 							}
 
 						} else {
-							result = split_node(records, target_record, key, value);
+							result = split_node(records, target_node, key, value);
 						}
 					}
 				}
 			}
-		} else if (compare(records, target_record, key) === 1) { // maxより大きい
-			if (fill_rate(records, target_record) != 1) { // 空きがある
-				result = insert_entry(records, target_record, key, value);
+		} else if (compare(records, target_node, key) === 1) { // maxより大きい
+			if (fill_rate(records, target_node) != 1) { // 空きがある
+				result = insert_entry(records, target_node, key, value);
 			} else {
-				const max: Entry | null = min_entry(records, target_record)
+				const max: Entry | null = min_entry(records, target_node)
 				if (max) {
 					if (max.grater) {
 						if (fill_rate(records, max.grater) != 1) { //空きがある
@@ -409,18 +408,17 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 							result = split_node(records, max.grater, key, value);
 						}
 					} else {
-						result = split_node(records, target_record, key, value);
+						result = split_node(records, target_node, key, value);
 					}
 				}
 			}
 		} else { // 中間
-			if (fill_rate(records, target_record) != 1) { // 空きがある
-				result = insert_entry(records, target_record, key, value);
+			if (fill_rate(records, target_node) != 1) { // 空きがある
+				result = insert_entry(records, target_node, key, value);
 			} else {
-				result = split_node(records, target_record, key, value);
+				result = split_node(records, target_node, key, value);
 			}
 		}
-
 	}
 	return result;
 }
