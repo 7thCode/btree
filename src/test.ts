@@ -66,7 +66,7 @@ describe('BTree', () => {
 		expect(entry6.value).toBe(6);
 		expect(entry7.value).toBe(7);
 
-		console.log(JSON.stringify(records));
+//		console.log(JSON.stringify(records));
 	});
 
 	it('insert', () => {
@@ -95,7 +95,7 @@ describe('BTree', () => {
 			expect(entry.value).toBe(index);
 		}
 
-		console.log(records.length / keys.length);
+	//	console.log(records.length / keys.length);
 	//	console.log(JSON.stringify(records));
 
 	});
@@ -114,7 +114,7 @@ describe('BTree', () => {
 				expect(found.value).toBe(index + 1);
 			}
 		}
-		console.log(records.length / 1000);
+	//	console.log(records.length / 1000);
 	});
 
 	it('random insert', () => {
@@ -135,7 +135,7 @@ describe('BTree', () => {
 			expect(found.key).toBe(keys[index]);
 		}
 
-		console.log(records.length / keys.length);
+	//	console.log(records.length / keys.length);
 	//	console.log(JSON.stringify(records));
 
 	});
@@ -260,7 +260,7 @@ describe('BTree', () => {
 
 //		console.log(JSON.stringify(keys));
 //		console.log(JSON.stringify(records));
-		console.log(records.length);
+//		console.log(records.length);
 	});
 
 	it('random insert 3', () => {
@@ -294,7 +294,7 @@ describe('BTree', () => {
 
 	//	console.log( "time: " + (endTime - startTime));
 
-	//	console.log(records.length / keys.length);
+		console.log(records.length / keys.length);
 	//	console.log(JSON.stringify(records));
 	});
 
