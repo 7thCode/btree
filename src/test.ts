@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {create_node, Entry, erase_entry, Find, Insert} from "./index";
+import {create_node, Entry, erase_entry,erase, Find, Insert} from "./index";
 
 describe('BTree', () => {
 /*
@@ -126,20 +126,8 @@ describe('BTree', () => {
 			,161,268,578,475,457,248,890];
 
 		for (let index = 0; index < keys.length; index++) {
-
-			if (keys[index] === 541) {
-				console.log(JSON.stringify(records))
-			}
-
 			Insert(records, keys[index], index);
-
-			if (keys[index] === 541) {
-				console.log(JSON.stringify(records))
-			}
-
 		}
-
-	//	Find(records, 460);
 
 		for (let index = 0; index < keys.length; index++) {
 			const found: Entry = Find(records,  keys[index]);
@@ -152,8 +140,8 @@ describe('BTree', () => {
 
 		}
 
-	//	console.log(records.length / keys.length);
-	//	console.log(JSON.stringify(records));
+	console.log(records.length / keys.length);
+	console.log(JSON.stringify(records));
 
 	});
 
@@ -321,6 +309,7 @@ describe('BTree', () => {
 	//	console.log(JSON.stringify(records));
 	});
 
+/*
 	it('erase', () => {
 
 		let records = [
@@ -338,15 +327,40 @@ describe('BTree', () => {
 			{"key":100,"value":7,"lesser":null,"grater":null},
 			{"key":null,"value":null,"lesser":null,"grater":null},
 			{"key":null,"value":null,"lesser":null,"grater":null},
+
 		];
 
-		erase_entry(records,  1,200);
+		erase(records,  1,320);
+		erase(records,  1,600);
 
-
-	//	console.log(JSON.stringify(records));
+		console.log(JSON.stringify(records));
 
 	});
+*/
+/*
+	it('erase 2', () => {
 
+		let records: Entry[] = create_node();
+
+		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420,12, 80, 72,65,82, 88,273,432,99,437,998,286];
+
+		for (let index = 0; index < keys.length; index++) {
+			Insert(records,  keys[index], index);
+		}
+
+		for (let index = 0; index < keys.length; index++) {
+			const entry: any = Find(records, keys[index]);
+			expect(entry.value).toBe(index);
+		}
+
+		for (let index = 0; index < keys.length; index++) {
+			const entry: boolean = erase(records,1, keys[index]);
+		}
+
+		console.log(JSON.stringify(records));
+
+	});
+*/
 	/*
 	it('test', () => {
 
