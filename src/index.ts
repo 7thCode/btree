@@ -404,6 +404,7 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 					} else {
 						const test: boolean = true;
 						if (test) {
+
 							// target_node => currentの直接の親
 							if (upper_node) {
 								if (fill_rate(records, upper_node) != 1) { // 空きがある
@@ -423,7 +424,6 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 							} else {
 								result = split_node(records, target_node, key, value);
 							}
-
 							
 						} else {
 							result = split_node(records, target_node, key, value);
