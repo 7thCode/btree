@@ -76,19 +76,8 @@ describe('BTree', () => {
 		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
 		for (let index = 0; index < keys.length; index++) {
-
-			//		if (keys[index].key === 1) {
-			//			console.log(JSON.stringify(records));
-			//		}
-
 			Insert(records, keys[index], index);
-
-			//		if (keys[index].key === 1) {
-			//			console.log(JSON.stringify(records));
-			//		}
 		}
-
-		//	console.log(JSON.stringify(records));
 
 		for (let index = 0; index < keys.length; index++) {
 			const entry: any = Find(records, keys[index]);
@@ -96,7 +85,6 @@ describe('BTree', () => {
 		}
 
 		console.log(records.length / keys.length);
-//	console.log(JSON.stringify(records));
 
 	});
 
@@ -114,45 +102,8 @@ describe('BTree', () => {
 				expect(found.value).toBe(index + 1);
 			}
 		}
-		//	console.log(records.length / 1000);
-	});
 
-	it('random insert', () => {
-
-		let records: Entry[] = create_node();
-		const keys: number[] = [
-			460, 663, 942, 346, 51, 400, 803, 81, 24, 576, 380, 646, 280, 159, 85, 910, 416, 947, 357, 412, 834, 417, 782, 361, 541,
-			346, 701, 525, 161, 117, 237, 836, 850, 788, 257, 813, 130, 666, 58, 534, 323, 6, 914
-			, 161, 268, 578, 475, 457, 248, 890];
-
-		for (let index = 0; index < keys.length; index++) {
-			Insert(records, keys[index], index);
-
-			//	const broken = [663,81,646,85,701,117,130,666];
-
-			//	for (let index = 0; index < broken.length; index++) {
-			//		const found: Entry = Find(records,  broken[index]);
-			//		if (!found) {
-			//			console.log("broken : " + broken[index])
-			//		}
-			//	}
-
-		}
-
-		for (let index = 0; index < keys.length; index++) {
-			const found: Entry = Find(records, keys[index]);
-			if (found) {
-				//		expect(found.key).toBe(keys[index]);
-			} else {
-				console.log(keys[index])
-				//			expect(true).toBe(false);
-			}
-
-		}
-
-		console.log(records.length / keys.length);
-//	console.log(JSON.stringify(records));
-
+		console.log("seq insert : " + records.length / 1000);
 	});
 
 	it('random insert 2', () => {
@@ -273,6 +224,8 @@ describe('BTree', () => {
 				console.log(keys[index])
 			}
 		}
+
+		console.log(records.length / 1000);
 	});
 
 	it('random insert 3', () => {

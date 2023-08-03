@@ -31,16 +31,16 @@ const to_index = (size: number) => {
 	return size - 1;
 }
 
-const find = (records: Entry[],upper_node:number, current_node: number, find_key: number): [number, number, Entry | null] => {
+const find = (records: Entry[], upper_node: number, current_node: number, find_key: number): [number, number, Entry | null] => {
 //	console.log(upper_node, current_node, find_key);
 	const _size = size(records, current_node);  // current_node.length;
 	if (_size > 0) {
 		const first = records[to_index(current_node)];
 		const last = records[to_index(current_node) + size_to_index(_size)];
 		if (!is_empty_entry(first) && (find_key < first.key) && first.lesser) {
-			return find(records,current_node, first.lesser, find_key);
+			return find(records, current_node, first.lesser, find_key);
 		} else if (!is_empty_entry(last) && (last.key < find_key) && last.grater) {
-			return find(records,current_node, last.grater, find_key);
+			return find(records, current_node, last.grater, find_key);
 		} else {
 			// scan node
 			for (let offset: number = 0; offset < _size; offset++) {
@@ -184,15 +184,15 @@ export const erase_entry = (records: Entry[], current_node: number, key: number)
 				records[(current_node - 1) + grater_offset] = grater[grater_offset];
 			}
 			records[(current_node - 1)].lesser = min.lesser;
-			records[(current_node - 1) + grater_offset] = {key:null, value:null, lesser : null, grater:null};
+			records[(current_node - 1) + grater_offset] = {key: null, value: null, lesser: null, grater: null};
 			result = true;
 		}
 		result = true;
 	} else if (grater.length === 0) { // 終端
 		const max = max_entry(records, current_node);
 		if (max) {
-			records[(current_node - 1) + (_size - 1) -1].grater =records[(current_node - 1) + (_size - 1)].grater
-			records[(current_node - 1) + (_size - 1)] = {key:null, value:null, lesser:null, grater:null};
+			records[(current_node - 1) + (_size - 1) - 1].grater = records[(current_node - 1) + (_size - 1)].grater
+			records[(current_node - 1) + (_size - 1)] = {key: null, value: null, lesser: null, grater: null};
 			result = true;
 		}
 		result = true;
@@ -237,7 +237,7 @@ export const erase_entry = (records: Entry[], current_node: number, key: number)
 }
 
 const node = (records: Entry[], current_node: number): Entry[] => {
-	const result : Entry[] = [];
+	const result: Entry[] = [];
 	if (current_node > 0) {
 		for (let index = 0; index < node_size; index++) {
 			result.push(records[to_index(current_node) + index]);
@@ -261,13 +261,13 @@ export const erase = (records: Entry[], current_node: number, key: number): bool
 	if (entry) { // targetにkeyが存在
 		console.log();
 
-		const _node :Entry[] = node(records,upper_node);
+		const _node: Entry[] = node(records, upper_node);
 
-		const _lesser :number = lesser(records,upper_node);
-		const _grater :number = grater(records,upper_node);
+		const _lesser: number = lesser(records, upper_node);
+		const _grater: number = grater(records, upper_node);
 
-		result = erase_entry(records,target_node,key);
-		if (is_empty_node(records,target_node)) {
+		result = erase_entry(records, target_node, key);
+		if (is_empty_node(records, target_node)) {
 			if (records[to_index(upper_node)].lesser === current_node) {
 				console.log()
 			}
@@ -378,9 +378,8 @@ const split_node = (records: Entry[], current_node: number, key: number, value: 
 
 const insert = (records: Entry[], current_node: number, key: number, value: number): number => {
 	let result: number = 0;
-	const [upper_node, target_node, entry] = find(records,0, current_node, key);
+	const [upper_node, target_node, entry] = find(records, 0, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
-	//	console.log("insert key : " + key);
 		if (target_node === 1) { // root
 			if (fill_rate(records, 1) != 1) { // 空きがある
 				result = insert_entry(records, 1, key, value);
@@ -402,29 +401,17 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 							result = split_node(records, min.lesser, key, value);
 						}
 					} else {
-						const test: boolean = true;
-						if (test) {
-
-							// target_node => currentの直接の親
-							if (upper_node) {
-								if (fill_rate(records, upper_node) != 1) { // 空きがある
-						//			console.log("before upper : " + JSON.stringify(node(records, upper_node)));
-						//			console.log("before target : " + JSON.stringify(node(records, target_node)));
-						//			console.log("key : " + key);
-									if (compare(records, target_node, key) === -1) {
-										result = split_node(records, target_node, key, value);
-									} else {
-										result = insert_entry(records, upper_node, key, value);
-									}
-						//			console.log("after upper : " + JSON.stringify(node(records, upper_node)));
-						//			console.log("after target : " + JSON.stringify(node(records, target_node)));
-								} else {
+						// target_node => currentの直接の親
+						if (upper_node) {
+							if (fill_rate(records, upper_node) != 1) { // 空きがある
+								if (compare(records, target_node, key) === -1) {
 									result = split_node(records, target_node, key, value);
+								} else {
+									result = insert_entry(records, upper_node, key, value);
 								}
 							} else {
 								result = split_node(records, target_node, key, value);
 							}
-							
 						} else {
 							result = split_node(records, target_node, key, value);
 						}
@@ -465,7 +452,7 @@ export const Insert = (records: Entry[], key: number, value: number): number => 
 
 export const Find = (records: Entry[], key: number): Entry => {
 	let result: any = null;
-	const found = find(records, 0,1, key);
+	const found = find(records, 0, 1, key);
 	const entry = found[2];
 	if (entry) {
 		result = entry;
