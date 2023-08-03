@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {create_node, Entry, Find, Insert} from "./index";
+import {Entry, Find, Init, Insert,split_node, split_node_2} from "./index";
 
 describe('BTree', () => {
 	/*
@@ -71,7 +71,7 @@ describe('BTree', () => {
 
 	it('insert', () => {
 
-		let records: Entry[] = create_node();
+		let records: Entry[] = Init();
 
 		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
@@ -90,7 +90,7 @@ describe('BTree', () => {
 
 	it('seq insert', () => {
 
-		let records: Entry[] = create_node();
+		let records: Entry[] = Init();
 
 		for (let index = 1; index < 1000; index++) {
 			Insert(records, index, index + 1);
@@ -108,7 +108,7 @@ describe('BTree', () => {
 
 	it('random insert 2', () => {
 
-		let records: Entry[] = create_node();
+		let records: Entry[] = Init();
 
 		const keys: number[] = [
 			973, 974, 763, 977, 23, 21, 28, 860, 782, 760,
@@ -230,7 +230,7 @@ describe('BTree', () => {
 
 	it('random insert 3', () => {
 
-		let records: Entry[] = create_node();
+		let records: Entry[] = Init();
 
 		const keys: number[] = []
 
@@ -260,6 +260,38 @@ describe('BTree', () => {
 
 		console.log("time : " + ((endTime - startTime) / keys.length));
 		console.log("space : " + records.length / keys.length);
+
+
+	});
+
+	it("split by size", () => {
+		let records = [
+			{"key": 100, "value": 1, "lesser": 1, "grater": null},
+			{"key": 200, "value": 2, "lesser": null, "grater": null},
+			{"key": 300, "value": 3, "lesser": null, "grater": null},
+			{"key": 400, "value": 4, "lesser": null, "grater": 2},
+		//	{"key": 500, "value": 5, "lesser": null, "grater": null},
+		//	{"key": 600, "value": 6, "lesser": null, "grater": null},
+		//	{"key": 700, "value": 7, "lesser": null, "grater": 2},
+		];
+
+		split_node(records, 1, 350, 3.5);
+
+		console.log(JSON.stringify(records));
+
+		let records2 = [
+			{"key": 100, "value": 1, "lesser": 1, "grater": null},
+			{"key": 200, "value": 2, "lesser": null, "grater": null},
+			{"key": 300, "value": 3, "lesser": null, "grater": null},
+			{"key": 400, "value": 4, "lesser": null, "grater": 2},
+			//	{"key": 500, "value": 5, "lesser": null, "grater": null},
+			//	{"key": 600, "value": 6, "lesser": null, "grater": null},
+			//	{"key": 700, "value": 7, "lesser": null, "grater": 2},
+		];
+
+		split_node_2(records2, 1, 350, 3.5);
+
+		console.log(JSON.stringify(records2));
 	});
 
 	/*
