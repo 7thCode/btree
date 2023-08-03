@@ -424,6 +424,7 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 								result = split_node(records, target_node, key, value);
 							}
 
+							
 						} else {
 							result = split_node(records, target_node, key, value);
 						}
