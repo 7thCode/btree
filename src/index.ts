@@ -380,6 +380,7 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 	let result: number = 0;
 	const [upper_node, target_node, entry] = find(records,0, current_node, key);
 	if (!entry) { // target_nodeに同じキーはない
+	//	console.log("insert key : " + key);
 		if (target_node === 1) { // root
 			if (fill_rate(records, 1) != 1) { // 空きがある
 				result = insert_entry(records, 1, key, value);
@@ -406,7 +407,16 @@ const insert = (records: Entry[], current_node: number, key: number, value: numb
 							// target_node => currentの直接の親
 							if (upper_node) {
 								if (fill_rate(records, upper_node) != 1) { // 空きがある
-									result = insert_entry(records, upper_node, key, value);
+						//			console.log("before upper : " + JSON.stringify(node(records, upper_node)));
+						//			console.log("before target : " + JSON.stringify(node(records, target_node)));
+						//			console.log("key : " + key);
+									if (compare(records, target_node, key) === -1) {
+										result = split_node(records, target_node, key, value);
+									} else {
+										result = insert_entry(records, upper_node, key, value);
+									}
+						//			console.log("after upper : " + JSON.stringify(node(records, upper_node)));
+						//			console.log("after target : " + JSON.stringify(node(records, target_node)));
 								} else {
 									result = split_node(records, target_node, key, value);
 								}
