@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {Entry, Find, Init, Insert,split_node, split_node_2} from "./index";
+import {Entry, erase, Find, Init, Insert, node, split_node, split_node_2, update_node} from "./index";
 
 describe('BTree', () => {
 	/*
@@ -261,7 +261,6 @@ describe('BTree', () => {
 		console.log("time : " + ((endTime - startTime) / keys.length));
 		console.log("space : " + records.length / keys.length);
 
-
 	});
 
 	it("split by size", () => {
@@ -270,9 +269,9 @@ describe('BTree', () => {
 			{"key": 200, "value": 2, "lesser": null, "grater": null},
 			{"key": 300, "value": 3, "lesser": null, "grater": null},
 			{"key": 400, "value": 4, "lesser": null, "grater": 2},
-		//	{"key": 500, "value": 5, "lesser": null, "grater": null},
-		//	{"key": 600, "value": 6, "lesser": null, "grater": null},
-		//	{"key": 700, "value": 7, "lesser": null, "grater": 2},
+			//	{"key": 500, "value": 5, "lesser": null, "grater": null},
+			//	{"key": 600, "value": 6, "lesser": null, "grater": null},
+			//	{"key": 700, "value": 7, "lesser": null, "grater": 2},
 		];
 
 		split_node(records, 1, 350, 3.5);
@@ -294,34 +293,92 @@ describe('BTree', () => {
 		console.log(JSON.stringify(records2));
 	});
 
-	/*
-		it('erase', () => {
 
-			let records = [
-				{"key":150,"value":1,"lesser":9,"grater":null},
-				{"key":200,"value":2,"lesser":null,"grater":null},
-				{"key":300,"value":3,"lesser":null,"grater":5},
-				{"key":null,"value":null,"lesser":null,"grater":null},
+	it('erase', () => {
 
-				{"key":320,"value":4,"lesser":null,"grater":null},
-				{"key":600,"value":5,"lesser":null,"grater":null},
-				{"key":null,"value":null,"lesser":null,"grater":null},
-				{"key":null,"value":null,"lesser":null,"grater":null},
+		let records = [
+			{"key": 150, "value": 1, "lesser": 9, "grater": null},
+			{"key": 200, "value": 2, "lesser": null, "grater": null},
+			{"key": 300, "value": 3, "lesser": null, "grater": 5},
+			{"key": null, "value": null, "lesser": null, "grater": null},
 
-				{"key":3,"value":6,"lesser":null,"grater":null},
-				{"key":100,"value":7,"lesser":null,"grater":null},
-				{"key":null,"value":null,"lesser":null,"grater":null},
-				{"key":null,"value":null,"lesser":null,"grater":null},
+			{"key": 320, "value": 4, "lesser": null, "grater": null},
+			{"key": 600, "value": 5, "lesser": null, "grater": null},
+			{"key": null, "value": null, "lesser": null, "grater": null},
+			{"key": null, "value": null, "lesser": null, "grater": null},
 
-			];
+			{"key": 3, "value": 6, "lesser": null, "grater": null},
+			{"key": 100, "value": 7, "lesser": null, "grater": null},
+			{"key": null, "value": null, "lesser": null, "grater": null},
+			{"key": null, "value": null, "lesser": null, "grater": null},
 
-			erase(records,  1,320);
-			erase(records,  1,600);
+		];
 
-			console.log(JSON.stringify(records));
 
-		});
-	*/
+		update_node(records, 9, node(records, 5));
+
+		//	erase(records, 1, 100);
+		//	erase(records,  1,3);
+
+		console.log(JSON.stringify(records));
+
+	});
+
+	it('erase 2', () => {
+
+		let records: Entry[] = Init();
+
+		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1]//, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+
+		for (let index = 0; index < keys.length; index++) {
+			Insert(records, keys[index], index);
+		}
+/*
+		erase(records, 1, 3);
+		let hoge = Find(records, 200);
+		erase(records, 1, 600);
+		hoge = Find(records, 200);
+		erase(records, 1, 100);
+		hoge = Find(records, 200);
+		erase(records, 1, 320);
+		hoge = Find(records, 200);
+		erase(records, 1, 150);
+		hoge = Find(records, 200);
+		console.log(JSON.stringify(records));
+		erase(records, 1, 300);
+		hoge = Find(records, 200);
+		console.log(JSON.stringify(records));
+		erase(records, 1, 160);
+		hoge = Find(records, 200);
+		erase(records, 1, 120);
+		hoge = Find(records, 200);
+	//	console.log(JSON.stringify(records));
+		erase(records, 1, 1);
+		hoge = Find(records, 200);
+	//	console.log(JSON.stringify(records));
+*/
+
+		for (let index = 0; index < keys.length; index++) {
+			erase(records, 1, keys[index]);
+			for (let index1 = index; index1 < keys.length; index1++) {
+				const entry: any = Find(records, keys[index1]);
+				if (index === index1) {
+					expect(entry).toBeFalsy();
+				} else {
+					if (!entry) {
+						console.log(keys[index] +  " " +  keys[index1])
+					}
+				//	expect(entry).toBeTruthy();
+				}
+			}
+		}
+
+//		console.log(JSON.stringify(records));
+	//	console.log(records.length / keys.length);
+
+	});
+
+
 	/*
 		it('erase 2', () => {
 
