@@ -242,8 +242,8 @@ export const erase = (records: Entry[], current_node: number, key: number): bool
 				const target_lesser: number = lesser(records, target_node);
 				const target_grater: number = grater(records, target_node);
 				const upper_size = size(records, upper_node);
-				records[target_lesser + to_index(target_size)].grater = records[to_index(target_node)].grater;
-				records[target_grater].lesser = records[to_index(target_node)].lesser;
+			//	records[target_lesser + to_index(target_size)].grater = records[to_index(target_node)].grater;
+			//	records[target_grater].lesser = records[to_index(target_node)].lesser;
 
 				const key1 = records[to_index(upper_node)+ to_index(upper_size)].key;
 				const key2 = records[to_index(target_node)+ to_index(target_size)].key;

@@ -328,14 +328,20 @@ describe('BTree', () => {
 
 		let records: Entry[] = Init();
 
-		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1]//, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120]//, 1, 310]//, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
 		for (let index = 0; index < keys.length; index++) {
 			Insert(records, keys[index], index);
 		}
-/*
-		erase(records, 1, 3);
-		let hoge = Find(records, 200);
+
+	//	console.log(JSON.stringify(records));
+	//	erase(records, 1, 160);
+	//	let hoge1 = Find(records, 120);
+	//	let hoge2  = Find(records, 1);
+	//	let hoge3  = Find(records, 310);
+	//	console.log(JSON.stringify(records));
+
+		/*
 		erase(records, 1, 600);
 		hoge = Find(records, 200);
 		erase(records, 1, 100);
@@ -344,36 +350,46 @@ describe('BTree', () => {
 		hoge = Find(records, 200);
 		erase(records, 1, 150);
 		hoge = Find(records, 200);
-		console.log(JSON.stringify(records));
+		hoge = Find(records, 310);
 		erase(records, 1, 300);
 		hoge = Find(records, 200);
-		console.log(JSON.stringify(records));
 		erase(records, 1, 160);
 		hoge = Find(records, 200);
 		erase(records, 1, 120);
 		hoge = Find(records, 200);
-	//	console.log(JSON.stringify(records));
 		erase(records, 1, 1);
 		hoge = Find(records, 200);
-	//	console.log(JSON.stringify(records));
+		console.log(JSON.stringify(records));
+		erase(records, 1, 310);
+		hoge = Find(records, 300);
+		console.log(JSON.stringify(records));
 */
 
+		console.log(JSON.stringify(records));
+
 		for (let index = 0; index < keys.length; index++) {
+			if (keys[index] === 120) {
+				console.log("hoge " + keys[index]  + " : " + JSON.stringify(records));
+			}
 			erase(records, 1, keys[index]);
 			for (let index1 = index; index1 < keys.length; index1++) {
+				if (keys[index1] === 120 && keys[index] === 120) {
+			//		const geho = Find(records, 310);
+					console.log("geho " + keys[index]  + " : " + JSON.stringify(records));
+				}
 				const entry: any = Find(records, keys[index1]);
 				if (index === index1) {
 					expect(entry).toBeFalsy();
 				} else {
-					if (!entry) {
-						console.log(keys[index] +  " " +  keys[index1])
-					}
-				//	expect(entry).toBeTruthy();
+				//	if (!entry) {
+				//		console.log(keys[index] +  " " +  keys[index1])
+				//	}
+					expect(entry).toBeTruthy();
 				}
 			}
 		}
 
-//		console.log(JSON.stringify(records));
+	//	console.log(JSON.stringify(records));
 	//	console.log(records.length / keys.length);
 
 	});
