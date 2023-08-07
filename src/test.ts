@@ -328,11 +328,7 @@ describe('BTree', () => {
 
 		let records: Entry[] = Init();
 
-		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120]//, 1, 310]//, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
-
-		for (let index = 0; index < keys.length; index++) {
-			Insert(records, keys[index], index);
-		}
+		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120]//, 1, 310, 2]//, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
 	//	console.log(JSON.stringify(records));
 	//	erase(records, 1, 160);
@@ -365,35 +361,63 @@ describe('BTree', () => {
 		console.log(JSON.stringify(records));
 */
 
-		console.log(JSON.stringify(records));
+//		console.log(JSON.stringify(records));
+//		keys.forEach((key) => {
 
-		for (let index = 0; index < keys.length; index++) {
-			if (keys[index] === 120) {
-				console.log("hoge " + keys[index]  + " : " + JSON.stringify(records));
+		const key = 120;
+
+			for (let index = 0; index < keys.length; index++) {
+				Insert(records, keys[index], index);
 			}
-			erase(records, 1, keys[index]);
-			for (let index1 = index; index1 < keys.length; index1++) {
-				if (keys[index1] === 120 && keys[index] === 120) {
-			//		const geho = Find(records, 310);
-					console.log("geho " + keys[index]  + " : " + JSON.stringify(records));
+
+			for (let index = 0; index < keys.length; index++) {
+				if (keys[index] === key) {
+					console.log("hoge " + keys[index]  + " : " + JSON.stringify(records));
 				}
-				const entry: any = Find(records, keys[index1]);
-				if (index === index1) {
-					expect(entry).toBeFalsy();
-				} else {
-				//	if (!entry) {
-				//		console.log(keys[index] +  " " +  keys[index1])
-				//	}
-					expect(entry).toBeTruthy();
+
+				erase(records, 1, keys[index]);
+				for (let index1 = index; index1 < keys.length; index1++) {
+					if (keys[index1] === key && keys[index] === key) {
+						//		const geho = Find(records, 310);
+						console.log("geho " + keys[index]  + " : " + JSON.stringify(records));
+					}
+					const entry: any = Find(records, keys[index1]);
+					if (index === index1) {
+						expect(entry).toBeFalsy();
+					} else {
+						//	if (!entry) {
+						//		console.log(keys[index] +  " " +  keys[index1])
+						//	}
+						//
+						expect(entry).toBeTruthy();
+					}
 				}
 			}
-		}
+//		});
 
 	//	console.log(JSON.stringify(records));
 	//	console.log(records.length / keys.length);
 
 	});
 
+	it("erase 3", () => {
+
+		let records: Entry[] = Init();
+
+		let insert_key = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		let erase_key =  [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+
+		for (let index = 0; index < insert_key.length; index++) {
+			Insert(records, insert_key[index], index);
+		}
+
+		for (let index = 0; index < erase_key.length; index++) {
+			erase(records, 1, erase_key[index]);
+			const entry: any = Find(records, erase_key[index]);
+			expect(entry).toBeFalsy();
+		}
+
+	})
 
 	/*
 		it('erase 2', () => {

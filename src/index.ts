@@ -239,6 +239,43 @@ export const erase = (records: Entry[], current_node: number, key: number): bool
 			result = erase_entry(records, target_node, key);
 		} else {
 			if (upper_node) { // last one
+
+				const _lesser: number = lesser(records, target_node);
+				const _grater: number = grater(records, target_node);
+				if (_lesser) {
+					if (!is_empty_node(records, _lesser)) {
+						const lesser_size = size(records, _lesser);
+						update_node(records, target_node, node(records, _lesser));
+						update_node(records, _lesser, create_node());
+						records[to_index(target_node)].lesser = null;
+						records[to_index(target_node) + to_index(lesser_size)].grater = _grater;
+					}
+				}
+				if (_grater) {
+					if (!is_empty_node(records, _grater)) {
+						const grater_size = size(records, _grater);
+						update_node(records, target_node, node(records, _grater));
+						update_node(records, _grater, create_node());
+				//		records[to_index(target_node)].lesser = _lesser;
+						records[to_index(target_node) + to_index(grater_size)].grater = null;
+					}
+				}
+
+				if (!(_lesser || _grater)) {
+
+						if (records[to_index(upper_node)].grater == target_node) {
+							records[to_index(upper_node)].grater = null;
+						}
+						if (records[to_index(upper_node)].lesser == target_node) {
+							records[to_index(upper_node)].lesser = null;
+						}
+
+					update_node(records, target_node, create_node());
+				}
+
+
+			/*
+
 				const target_lesser: number = lesser(records, target_node);
 				const target_grater: number = grater(records, target_node);
 				const upper_size = size(records, upper_node);
@@ -257,7 +294,7 @@ export const erase = (records: Entry[], current_node: number, key: number): bool
 			//		records[to_index(upper_node)+ to_index(upper_size)].lesser = records[to_index(target_node)+ to_index(target_size)].grater;
 			//	}
 				result = erase_entry(records, target_node, key);
-
+*/
 		/*		if (target_node === upper_lesser) {
 					if (is_empty_node(records, target_node)) {
 						records[to_index(upper_node)].lesser = target_grater;
@@ -283,15 +320,18 @@ export const erase = (records: Entry[], current_node: number, key: number): bool
 						records[to_index(target_node)].lesser = null;
 						records[to_index(target_node) + to_index(lesser_size)].grater = _grater;
 					}
-				} else if (_grater) {
+				}
+				if (_grater) {
 					if (!is_empty_node(records, _grater)) {
 						const grater_size = size(records, _grater);
 						update_node(records, target_node, node(records, _grater));
 						update_node(records, _grater, create_node());
-						records[to_index(target_node)].lesser = _lesser;
+					//	records[to_index(target_node)].lesser = _lesser;
 						records[to_index(target_node)+ to_index(grater_size)].grater = null;
 					}
-				} else {
+				}
+
+				if (!(_lesser || _grater)) {
 					update_node(records, target_node, create_node());
 				}
 		//		console.log(JSON.stringify(records));
