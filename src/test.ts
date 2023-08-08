@@ -6,32 +6,13 @@
 
 "use strict";
 
-import {Entry, erase, Find, Init, Insert, node, split_node, split_node_2, update_node} from "./bainary";
+import {Entry, erase, Init, Insert, node, split_node, split_node_2, update_node} from "./bainary";
 
-import {find,find_at_node, grater, key, lesser, set_grater, set_key, set_lesser, set_value, to_index, value} from "./index";
+import {append_record, bytes_to_node, fill_count, find, find_at_node, grater, init_node, key, lesser, node_bytes, node_record, set_grater, set_key, set_lesser, set_value, split, to_index, update_record, value, insert, insert_to_node, copy_entry} from "./index";
 
-
+/*
 describe('binary', () => {
-	/*
-		it("etc", () => {
 
-			expect(between(100, 99, 101)).toBeTruthy();
-
-			const entry: Entry = {
-				key: null,
-				value: null,
-				lesser: null,
-				grater: null
-			}
-
-			expect(is_empty_entry(entry)).toBeTruthy();
-
-			const empty_node: Entry[] = create_node();
-
-			expect(is_empty_node(empty_node, 0)).toBeTruthy();
-
-		});
-	*/
 
 	it("find", () => {
 
@@ -369,7 +350,7 @@ describe('binary', () => {
 
 //		console.log(JSON.stringify(records));
 //		keys.forEach((key) => {
-
+/*
 		for (let index = 0; index < insert_keys.length; index++) {
 			Insert(records, insert_keys[index], index);
 		}
@@ -468,7 +449,7 @@ describe('binary', () => {
 				expect(entry).toBeTruthy();
 			}
 	*/
-
+/*
 		const insert_keys: any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
 		let find_keys: any[] = [600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
@@ -546,8 +527,7 @@ describe('binary', () => {
 				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998];
 				erase_after_insert(insert_keys, find_keys, 286);
 		*/
-
-	})
+//	})
 
 	/*
 		it('erase 2', () => {
@@ -590,9 +570,7 @@ describe('binary', () => {
 
 	});
 */
-
-
-});
+//});
 
 describe('balancd', () => {
 
@@ -630,14 +608,83 @@ describe('balancd', () => {
 			0
 		]
 
-	//	expect(records[to_index(3)]).toBe(1);
+		expect(node_bytes()).toBe(13);
+
+		expect(records[to_index(3)]).toBe(1);
+
+		expect(init_node()).toStrictEqual([0,0,0,0,0,0,0,0,0,0,0,0,0]);
+
+		expect(fill_count(records,3)).toBe(4);
+
+		expect(node_record(records,3)).toStrictEqual([
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6]);
+
+		expect(bytes_to_node(records.length)).toBe(6);
+
+		expect(bytes_to_node(records.length)).toBe(6);
+
+		const node = [
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6]
+
+		copy_entry(node, 2,3);
+		expect(node).toStrictEqual([
+			1, 25, 500,
+			2, 45, 600,
+			2, 45, 600,
+			5, 85, 0,
+			6])
+
+	});
+
+	it("accessor", () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
 
 		expect(lesser(records,3,1)).toBe(1);
 		expect(key(records,3,1)).toBe(25);
 		expect(value(records,3,1)).toBe(500);
 		expect(grater(records,3,1)).toBe(2);
 
-		/*
+
 		set_lesser(records, 3, 2, 100)
 		set_key(records,3,2,200)
 		set_value(records,3,2,300)
@@ -647,17 +694,379 @@ describe('balancd', () => {
 		expect(key(records,3,2)).toBe(200);
 		expect(value(records,3,2)).toBe(300);
 		expect(grater(records,3,2)).toBe(400);
-*/
-		expect(find_at_node(records,3,1)).toStrictEqual([1, 0]);
-		expect(find_at_node(records,3,25)).toStrictEqual([0,500]);
-		expect(find_at_node(records,3,40)).toStrictEqual([2,0]);
-		expect(find_at_node(records,3,45)).toStrictEqual([0,600]);
-		expect(find_at_node(records,3,100)).toStrictEqual([6,0]);
 
-		expect(find(records, 0,3, 40)).toStrictEqual([3,2,400])
-		expect(find(records, 0,3, 41)).toStrictEqual([3,2,0])
 	});
 
+	it("find", () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
+		expect(find_at_node(records,3,1)).toStrictEqual([1, -1]);
+		expect(find_at_node(records,3,25)).toStrictEqual([0,500]);
+		expect(find_at_node(records,3,40)).toStrictEqual([2,-1]);
+		expect(find_at_node(records,3,45)).toStrictEqual([0,600]);
+		expect(find_at_node(records,3,100)).toStrictEqual([6,-1]);
+
+		expect(find(records,0,3, 40)).toStrictEqual([3,2,400])
+		expect(find(records,0,3, 41)).toStrictEqual([3,2,-1])
+
+		expect(split(node_record(records,3))[0]).toStrictEqual([
+				1, 25, 500,
+				2, 45, 600,
+				4, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+		expect(split(node_record(records,3))[1]).toStrictEqual([
+				4,65, 0,
+				5, 85, 0,
+				6, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+		expect(append_record(records, [1,2,3,4,5,6,7,8,9,0,11,12,13])).toBe(7)
+
+		const records2 = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1,2,3,4,5,6,7,8,9,0,11,12,13
+		];
+
+		expect(records).toStrictEqual(records2);
+
+		const records3 = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0,0,0,
+			0,0,0,
+			0,0,0,
+			0,0,0,
+			0
+		];
+
+		update_record(records2,7,[0,0,0,0,0,0,0,0,0,0,0,0,0]);
+		expect(records2).toStrictEqual(records3);
+
+
+	});
+
+	it("split", () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
+		expect(split(node_record(records,3))[0]).toStrictEqual([
+				1, 25, 500,
+				2, 45, 600,
+				4, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+		expect(split(node_record(records,3))[1]).toStrictEqual([
+				4,65, 0,
+				5, 85, 0,
+				6, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+		expect(split(node_record(records,2))[0]).toStrictEqual([
+			0, 30, 300,
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			]
+		);
+
+		expect(split(node_record(records,2))[1]).toStrictEqual([
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			]
+		);
+
+	});
+
+	it("append", () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
+		expect(append_record(records, [1,2,3,4,5,6,7,8,9,0,11,12,13])).toBe(7)
+
+		const records2 = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1,2,3,4,5,6,7,8,9,0,11,12,13
+		];
+
+		expect(records).toStrictEqual(records2);
+
+		const records3 = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0,0,0,
+			0,0,0,
+			0,0,0,
+			0,0,0,
+			0
+		];
+
+		update_record(records2,7,[0,0,0,0,0,0,0,0,0,0,0,0,0]);
+		expect(records2).toStrictEqual(records3);
+
+	});
+
+	it('insert', () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
+	//	insert_to_node(records, 2, 32,110);
+
+		let [root_node, node] = insert(records,3, 32, 110);
+		const a = 1;
+
+	});
 });
 
 describe('example', () => {
