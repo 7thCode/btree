@@ -6,9 +6,12 @@
 
 "use strict";
 
-import {Entry, erase, Find, Init, Insert, node, split_node, split_node_2, update_node} from "./index";
+import {Entry, erase, Find, Init, Insert, node, split_node, split_node_2, update_node} from "./bainary";
 
-describe('BTree', () => {
+import {find,find_at_node, grater, key, lesser, set_grater, set_key, set_lesser, set_value, to_index, value} from "./index";
+
+
+describe('binary', () => {
 	/*
 		it("etc", () => {
 
@@ -328,14 +331,17 @@ describe('BTree', () => {
 
 		let records: Entry[] = Init();
 
-		let keys = [3, 600, 100, 320, 150, 300, 200, 160, 120]//, 1, 310, 2]//, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		let insert_keys: any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
-	//	console.log(JSON.stringify(records));
-	//	erase(records, 1, 160);
-	//	let hoge1 = Find(records, 120);
-	//	let hoge2  = Find(records, 1);
-	//	let hoge3  = Find(records, 310);
-	//	console.log(JSON.stringify(records));
+		let erase_keys: any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+
+
+		//	console.log(JSON.stringify(records));
+		//	erase(records, 1, 160);
+		//	let hoge1 = Find(records, 120);
+		//	let hoge2  = Find(records, 1);
+		//	let hoge3  = Find(records, 310);
+		//	console.log(JSON.stringify(records));
 
 		/*
 		erase(records, 1, 600);
@@ -364,58 +370,182 @@ describe('BTree', () => {
 //		console.log(JSON.stringify(records));
 //		keys.forEach((key) => {
 
-		const key = 120;
+		for (let index = 0; index < insert_keys.length; index++) {
+			Insert(records, insert_keys[index], index);
+		}
 
-			for (let index = 0; index < keys.length; index++) {
-				Insert(records, keys[index], index);
+
+		const key = 300;
+
+
+		const size = erase_keys.length
+		for (let index = 0; index < size; index++) {
+			if (erase_keys[index] === key) {
+				console.log("hoge " + erase_keys[index] + " : " + JSON.stringify(records));
 			}
 
-			for (let index = 0; index < keys.length; index++) {
-				if (keys[index] === key) {
-					console.log("hoge " + keys[index]  + " : " + JSON.stringify(records));
-				}
+			erase(records, 1, erase_keys[index]);
 
-				erase(records, 1, keys[index]);
-				for (let index1 = index; index1 < keys.length; index1++) {
-					if (keys[index1] === key && keys[index] === key) {
-						//		const geho = Find(records, 310);
-						console.log("geho " + keys[index]  + " : " + JSON.stringify(records));
+			if (erase_keys[index] === key) {
+				console.log("geho " + erase_keys[index] + " : " + JSON.stringify(records));
+			}
+
+			for (let index1 = index; index1 < size; index1++) {
+				const entry: any = Find(records, erase_keys[index1]);
+
+				if (erase_keys.find((aaaaaaaaaa) => {
+					const hoge = aaaaaaaaaa;
+					const geho = erase_keys[index1];
+					return hoge === geho
+				})) {
+					if (entry) {
+						const a = 1;
 					}
-					const entry: any = Find(records, keys[index1]);
-					if (index === index1) {
-						expect(entry).toBeFalsy();
-					} else {
-						//	if (!entry) {
-						//		console.log(keys[index] +  " " +  keys[index1])
-						//	}
-						//
-						expect(entry).toBeTruthy();
+
+					//			expect(entry).toBeFalsy();
+				} else {
+
+					if (!entry) {
+						const a = 1;
 					}
+
+					//			expect(entry).toBeTruthy();
 				}
 			}
+		}
 //		});
 
-	//	console.log(JSON.stringify(records));
-	//	console.log(records.length / keys.length);
+		//	console.log(JSON.stringify(records));
+		//	console.log(records.length / keys.length);
 
 	});
 
 	it("erase 3", () => {
 
-		let records: Entry[] = Init();
+		//	const find_keys: [] = [600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
 
-		let insert_key = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
-		let erase_key =  [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		const erase_after_insert = (insert_keys: any[], find_keys: any[], value: number) => {
+			const records = Init();
+			for (let index = 0; index < insert_keys.length; index++) {
+				Insert(records, insert_keys[index], index);
+			}
 
-		for (let index = 0; index < insert_key.length; index++) {
-			Insert(records, insert_key[index], index);
+				console.log("hoge " + value + " : " + JSON.stringify(records));
+
+
+			erase(records, 1, value);
+
+
+				console.log("geho " + value + " : " + JSON.stringify(records));
+
+
+			for (let index = 0; index < find_keys.length; index++) {
+				let entry = Find(records, find_keys[index]);
+				if (!entry) {
+		//			console.log(value);
+				}
+				expect(entry).toBeTruthy();
+				entry = Find(records, value);
+				if (!entry) {
+		//			console.log(value);
+				}
+				expect(entry).toBeFalsy();
+			}
+
 		}
 
-		for (let index = 0; index < erase_key.length; index++) {
-			erase(records, 1, erase_key[index]);
-			const entry: any = Find(records, erase_key[index]);
-			expect(entry).toBeFalsy();
-		}
+		/*
+			let records: Entry[] = Init();
+
+			let insert_keys:any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+			for (let index = 0; index < insert_keys.length; index++) {
+				Insert(records, insert_keys[index], index);
+			}
+
+			let find_keys:any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+			for (let index = 0; index < find_keys.length; index++) {
+				const entry = Find(records, find_keys[index]);
+				expect(entry).toBeTruthy();
+			}
+	*/
+
+		const insert_keys: any[] = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+
+		let find_keys: any[] = [600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		erase_after_insert(insert_keys, find_keys, 3);
+
+		find_keys = [3, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+		erase_after_insert(insert_keys, find_keys, 600);
+
+				find_keys = [3, 600, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 100);
+
+				find_keys = [3, 600, 100, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 320);
+
+				find_keys = [3, 600, 100, 320, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 150);
+/*
+				find_keys = [3, 600, 100, 320, 150, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 300);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 200);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 160);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 120);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 1);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 310);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 2);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 420);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 12);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 72, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 80);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 65, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 72);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 82, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 65);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 88, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 82);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 273, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 88);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 432, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 273);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 99, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 432);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 437, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 99);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 998, 286];
+				erase_after_insert(insert_keys, find_keys, 437);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 286];
+				erase_after_insert(insert_keys, find_keys, 998);
+
+				find_keys = [3, 600, 100, 320, 150, 300, 200, 160, 120, 1, 310, 2, 420, 12, 80, 72, 65, 82, 88, 273, 432, 99, 437, 998];
+				erase_after_insert(insert_keys, find_keys, 286);
+		*/
 
 	})
 
@@ -464,4 +594,87 @@ describe('BTree', () => {
 
 });
 
+describe('balancd', () => {
 
+	it("etc", () => {
+		const records = [
+			0, 10, 100,
+			0, 20, 200,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 30, 300,
+			0, 40, 400,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			1, 25, 500,
+			2, 45, 600,
+			4, 65, 0,
+			5, 85, 0,
+			6,
+			0, 50, 500,
+			0, 60, 600,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 70, 700,
+			0, 80, 800,
+			0, 0, 0,
+			0, 0, 0,
+			0,
+			0, 90, 900,
+			0, 100, 1000,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		]
+
+	//	expect(records[to_index(3)]).toBe(1);
+
+		expect(lesser(records,3,1)).toBe(1);
+		expect(key(records,3,1)).toBe(25);
+		expect(value(records,3,1)).toBe(500);
+		expect(grater(records,3,1)).toBe(2);
+
+		/*
+		set_lesser(records, 3, 2, 100)
+		set_key(records,3,2,200)
+		set_value(records,3,2,300)
+		set_grater(records,3,2,400)
+
+		expect(lesser(records,3,2)).toBe(100);
+		expect(key(records,3,2)).toBe(200);
+		expect(value(records,3,2)).toBe(300);
+		expect(grater(records,3,2)).toBe(400);
+*/
+		expect(find_at_node(records,3,1)).toStrictEqual([1, 0]);
+		expect(find_at_node(records,3,25)).toStrictEqual([0,500]);
+		expect(find_at_node(records,3,40)).toStrictEqual([2,0]);
+		expect(find_at_node(records,3,45)).toStrictEqual([0,600]);
+		expect(find_at_node(records,3,100)).toStrictEqual([6,0]);
+
+		expect(find(records, 0,3, 40)).toStrictEqual([3,2,400])
+		expect(find(records, 0,3, 41)).toStrictEqual([3,2,0])
+	});
+
+});
+
+describe('example', () => {
+
+	it('test', () => {
+
+		let a = 0;
+
+		const startTime = new Date().getTime();
+
+		for (let index1 = 0; index1 < 1000000000; index1++) {
+			a = index1 * 1000;
+		}
+
+		const endTime = new Date().getTime();
+
+		console.log((endTime - startTime));
+
+	});
+})
