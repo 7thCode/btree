@@ -1064,7 +1064,8 @@ describe('balancd', () => {
 	//	insert_to_node(records, 2, 32,110);
 
 		let [root_node, node] = insert(records,3, 32, 110);
-		const a = 1;
+		const a = find(records,0, 3, 32);
+		const b = 1;
 
 	});
 });
