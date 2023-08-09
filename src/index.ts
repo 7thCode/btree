@@ -7,7 +7,7 @@
 "use strict";
 
 const entry_size = 3;
-const node_size = 4;
+const node_size = 5;
 
 export const node_bytes = (): number => {
 	return ((node_size * entry_size) + 1);
@@ -107,21 +107,26 @@ export const node_record = (record: number[], node: number): number[] => {
 }
 
 // split by ratio
-export const split = (mut_node: number[]): number[][] => {
+export const split_node = (mut_node: number[]): number[][] => {
 	const result: number[][] = [];
+	result.push(init_node());
 	result.push(init_node());
 	result.push(init_node());
 	const count = fill_count(mut_node, 1);
 	const full_bytes = to_byte(count);
-	const half_bytes = Math.floor(full_bytes / 2);
+	const half_bytes = to_byte(Math.floor(count / 2));
 	let source_offset = 0
 	let dist_offset = 0;
-	for (; source_offset <= half_bytes; source_offset++, dist_offset++) {
+	for (; source_offset < half_bytes; source_offset++, dist_offset++) {
 		result[0][dist_offset] = mut_node[source_offset];
 	}
 	dist_offset = 0;
-	for (; source_offset <= full_bytes; source_offset++, dist_offset++) {
-		result[1][dist_offset] = mut_node[source_offset - 1];
+	for (; source_offset <= half_bytes + 3; source_offset++, dist_offset++) {
+		result[1][dist_offset] = mut_node[source_offset -1];
+	}
+	dist_offset = 0;
+	for (; source_offset <= full_bytes + 1; source_offset++, dist_offset++) {
+		result[2][dist_offset] = mut_node[source_offset - 2];
 	}
 	return result;
 }
@@ -143,9 +148,12 @@ export const append_record = (record: number[], data: number[]): number => {
 }
 
 //
-export const copy_entry = (mut_node: number[], index1: number, index2: number): void => {
-	for (let offset = 0; offset < entry_size; offset++) {
-		mut_node[((index2 - 1) * entry_size) + offset] = mut_node[((index1 - 1) * entry_size) + offset];
+export const move_entry = (mut_node: number[], count: number): void => {
+	const _count = node_size - count;
+	const start = node_bytes();
+	const end = start - (entry_size * _count) - 1;
+	for (let offset = start; offset > end; offset--) {
+		mut_node[offset - 1] = mut_node[offset - entry_size - 1];
 	}
 }
 
@@ -180,44 +188,53 @@ export const find = (record: number[], parent_node: number, root_node: number, f
 }
 
 // フルの場合は使えない。
-export const insert_to_node = (record: number[], node: number, new_key: number, value: number): boolean => {
-	let result = false;
-	const mut_node = node_record(record, node);
+export const insert_to_node = (mut_node: number[], lesser: number, new_key: number, value: number, grater: number): number[] => {
+	let result: any = null;
 	const count = fill_count(mut_node, 1);
 	for (let offset = 1; offset <= count; offset++) {
 		const target_key: number = key(mut_node, 1, offset);
 		if (target_key > new_key) {
-			copy_entry(mut_node, offset, offset + 1); //　退避
-			mut_node.splice(to_byte(offset - 1), 3, new_key, value, 0); // 内輪で最大
-			update_record(record, node, mut_node);
-			result = true;
+			move_entry(mut_node, offset); //　退避
+			mut_node.splice(to_byte(offset - 1) - 1, 4, lesser, new_key, value, grater); // Keyが内輪で最大の「前」に追加。
+			result = mut_node;
 			break;
 		} else if (target_key === new_key) {
-			result = false;
+			result = null;
 			break;
 		}
 	}
 	return result;
 }
 
+const split = (record: number[], target_node: number, update_node: number): void => {
+	const mut_node: number[] = node_record(record, target_node);
+	const mut_new_nodes: number[][] = split_node(mut_node);
+	const lesser:number = target_node;
+	update_record(record, lesser, mut_new_nodes[0]);	// lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
+	const grater: number = append_record(record, mut_new_nodes[2]);
+	const _key = key(mut_new_nodes[1], 1, 1);
+	const _value = value(mut_new_nodes[1], 1, 1);
+	const _update_node = node_record(record, update_node);
+	const _insert_node = insert_to_node(_update_node, lesser, _key, _value, grater);
+	update_record(record, update_node, _insert_node);
+}
+
 //
-export const insert = (record: number[], root_node: number, key: number, value: number): [root_node: number, node: number, success: boolean] => {
-	let [parent, node, _value] = find(record, 0, root_node, key);
+export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): [root_node: number, node: number, success: boolean] => {
+	let [parent, node, _value] = find(record, 0, root_node, insert_key);
 	let root = parent;
 	let success = false;
 	if (_value < 0) { // not_found.
-		const fills = fill_count(record, node);
-		if (fills === node_size) {
-			const mut_node = node_record(record, node);
 
-			// export const init_node = (): number[] => {
-			// export const node_record = (record: number[], node:number): number[] => {
-			// export const split = (mut_node: number[]): number[][] => {
-			// export const append_record = (record: number[], data:number[]): number => {
-			// export const update_record = (record: number[],node:number, data:number[]): void => {
+		if (fill_count(record, parent) === node_size) {
+	//		split(record, parent, parent);
+		}
 
+		if (fill_count(record, node) === node_size) {
+			split(record, node, parent);
+			[root, node, success] = insert(record, root_node, insert_key, insert_value);
 		} else {
-			success = insert_to_node(record, node, key, value)
+			update_record(record, node, insert_to_node(node_record(record, node), 0, insert_key, insert_value, 0));
 		}
 	}
 	return [root, node, success];
