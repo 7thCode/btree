@@ -7,18 +7,18 @@
 "use strict";
 
 const entry_size = 3;
-const node_size = 5;
+const entry_count = 5;
 
 export const node_bytes = (): number => {
-	return ((node_size * entry_size) + 1);
+	return ((entry_count * entry_size) + 1);
 }
 
 export const bytes_to_node = (bytes: number): number => {
 	return Math.floor(bytes / node_bytes());
 }
 
-export const to_byte = (node: number): number => {
-	return (node * entry_size) + 1;
+export const to_byte = (entry_count: number): number => {
+	return (entry_count * entry_size) + 1;
 }
 
 export const to_index = (node: number): number => {
@@ -85,7 +85,7 @@ export const init_node = (): number[] => {
 //
 export const fill_count = (record: number[], node: number): number => {
 	let result = 0;
-	for (let offset = 1; offset <= node_size; offset++) {
+	for (let offset = 1; offset <= entry_count; offset++) {
 		if (!key(record, node, offset)) {
 			break;
 		} else {
@@ -122,7 +122,7 @@ export const split_node = (mut_node: number[]): number[][] => {
 	}
 	dist_offset = 0;
 	for (; source_offset <= half_bytes + 3; source_offset++, dist_offset++) {
-		result[1][dist_offset] = mut_node[source_offset -1];
+		result[1][dist_offset] = mut_node[source_offset - 1];
 	}
 	dist_offset = 0;
 	for (; source_offset <= full_bytes + 1; source_offset++, dist_offset++) {
@@ -148,13 +148,15 @@ export const append_record = (record: number[], data: number[]): number => {
 }
 
 //
-export const move_entry = (mut_node: number[], count: number): void => {
-	const _count = node_size - count;
+export const move_entry = (mut_node: number[], count: number): number[] => {
+	let result: number[] = [];
+	const offset_count = entry_count - count;
 	const start = node_bytes();
-	const end = start - (entry_size * _count) - 1;
+	const end = start - (entry_size * offset_count);
 	for (let offset = start; offset > end; offset--) {
-		mut_node[offset - 1] = mut_node[offset - entry_size - 1];
+		result.push(mut_node[offset - entry_size - 1]);
 	}
+	return result;
 }
 
 // serial
@@ -178,65 +180,66 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 }
 
 //
-export const find = (record: number[], parent_node: number, root_node: number, find_key: number): [parent_node: number, node: number, value: number] => {
+export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
 	const result = find_at_node(record, root_node, find_key);
 	if (result[0]) {
-		return find(record, root_node, result[0], find_key);
+		parent_node.push(root_node);
+		return find(record, parent_node, result[0], find_key);
 	} else {
 		return [parent_node, root_node, result[1]];
 	}
 }
 
-// フルの場合は使えない。
-export const insert_to_node = (mut_node: number[], lesser: number, new_key: number, value: number, grater: number): number[] => {
-	let result: any = null;
+// lesser: number, new_key: number, value: number, grater: number
+export const insert_to_node = (mut_node: number[], entry: number[]): number[] => {
+	let result: number[] = [];
 	const count = fill_count(mut_node, 1);
 	for (let offset = 1; offset <= count; offset++) {
 		const target_key: number = key(mut_node, 1, offset);
-		if (target_key > new_key) {
-			move_entry(mut_node, offset); //　退避
-			mut_node.splice(to_byte(offset - 1) - 1, 4, lesser, new_key, value, grater); // Keyが内輪で最大の「前」に追加。
+		if (target_key > entry[1]) {
+			mut_node.splice(to_byte(offset - 1) - 1, 1, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
 			result = mut_node;
 			break;
-		} else if (target_key === new_key) {
-			result = null;
+		} else if (target_key === entry[1]) {
+			result = [];
+			break;
+		} else if (offset === 5) {
+			mut_node.pop();
+			mut_node.push(entry[0], entry[1], entry[2], entry[3]);
+			result = mut_node;
 			break;
 		}
 	}
 	return result;
 }
 
-const split = (record: number[], target_node: number, update_node: number): void => {
-	const mut_node: number[] = node_record(record, target_node);
-	const mut_new_nodes: number[][] = split_node(mut_node);
-	const lesser:number = target_node;
-	update_record(record, lesser, mut_new_nodes[0]);	// lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
-	const grater: number = append_record(record, mut_new_nodes[2]);
-	const _key = key(mut_new_nodes[1], 1, 1);
-	const _value = value(mut_new_nodes[1], 1, 1);
-	const _update_node = node_record(record, update_node);
-	const _insert_node = insert_to_node(_update_node, lesser, _key, _value, grater);
-	update_record(record, update_node, _insert_node);
-}
-
-//
-export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): [root_node: number, node: number, success: boolean] => {
-	let [parent, node, _value] = find(record, 0, root_node, insert_key);
-	let root = parent;
+export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): [root_node: number[], node: number, success: boolean] => {
+	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
 	let success = false;
 	if (_value < 0) { // not_found.
+		const found_node = node_record(record, found_node_index);
+		let overflow = insert_to_node(found_node, [0, insert_key, insert_value, 0]);
+		for (; parents.length > 0;) {
+			const oya: number | undefined = parents.pop();
+			if (overflow.length <= to_byte(entry_count)) {
+				update_record(record, found_node_index, overflow);
+			} else {
+				if (oya) {
+					const mut_new_nodes: number[][] = split_node(overflow);
+					const lesser: number = found_node_index;
+					update_record(record, lesser, mut_new_nodes[0]); // lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
 
-		if (fill_count(record, parent) === node_size) {
-	//		split(record, parent, parent);
-		}
+					const grater: number = append_record(record, mut_new_nodes[2]);
+					const _key = key(mut_new_nodes[1], 1, 1);
+					const _value = value(mut_new_nodes[1], 1, 1);
 
-		if (fill_count(record, node) === node_size) {
-			split(record, node, parent);
-			[root, node, success] = insert(record, root_node, insert_key, insert_value);
-		} else {
-			update_record(record, node, insert_to_node(node_record(record, node), 0, insert_key, insert_value, 0));
+					const oya_node = node_record(record, oya);
+					let insert_node = insert_to_node(oya_node, [lesser, _key, _value, grater]);
+					update_record(record, oya, insert_node);
+				}
+			}
 		}
 	}
-	return [root, node, success];
+	success = true;
+	return [parents, 1, success];
 }
-
