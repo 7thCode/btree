@@ -113,7 +113,7 @@ export const split_node = (mut_node: number[]): number[][] => {
 	result.push(init_node());
 	result.push(init_node());
 	const count = fill_count(mut_node, 1);
-	const full_bytes = to_byte(count);
+	const full_bytes = to_byte(count + 1);
 	const separate_bytes = to_byte(Math.floor(count / 2));
 	let source_offset = 0
 	let dist_offset = 0;
@@ -188,7 +188,7 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
 	const result = find_at_node(record, root_node, find_key);
 	parent_node.push(root_node);
-	if (result[0]) {
+	if (result[1] < 0) {
 		return find(record, parent_node, result[0], find_key);
 	} else {
 		return [parent_node, root_node, result[1]];
