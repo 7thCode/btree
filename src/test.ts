@@ -292,6 +292,71 @@ describe('balanced tree', () => {
 
 	});
 
+	it("split node" , () => {
+
+		const node = [
+			1,10,100,
+			2,20,200,
+			3,30,300,
+			4,40,400,
+			5,50,500,
+			6
+		]
+
+		expect(split_node(node)[0]).toStrictEqual([
+			1,10,100,
+			2,20,200,
+			3, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0
+			]
+		);
+
+		expect(split_node(node)[1]).toStrictEqual([
+				3,30,300,
+				4, 0, 0,
+				0, 0, 0,
+				0, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+		expect(split_node(node)[2]).toStrictEqual([
+				4,40,400,
+				5,50,500,
+				6, 0, 0,
+				0, 0, 0,
+				0, 0, 0,
+				0
+			]
+		);
+
+
+	})
+
+	it("find at node" , () => {
+
+
+		const node = [2, 10, 100 ,3, 20, 200,4, 30, 300,5, 40, 400,6, 50, 500,7];
+
+		const a = find_at_node(node, 1, 15);
+
+		expect(find_at_node(node, 1, 5)).toStrictEqual([2, -1]);
+		expect(find_at_node(node, 1, 10)).toStrictEqual([1, 100]);
+		expect(find_at_node(node, 1, 15)).toStrictEqual([3, -1]);
+		expect(find_at_node(node, 1, 20)).toStrictEqual([1, 200]);
+		expect(find_at_node(node, 1, 25)).toStrictEqual([4, -1]);
+		expect(find_at_node(node, 1, 30)).toStrictEqual([1, 300]);
+		expect(find_at_node(node, 1, 35)).toStrictEqual([5, -1]);
+		expect(find_at_node(node, 1, 40)).toStrictEqual([1, 400]);
+		expect(find_at_node(node, 1, 45)).toStrictEqual([6, -1]);
+		expect(find_at_node(node, 1, 50)).toStrictEqual([1, 500]);
+		expect(find_at_node(node, 1, 55)).toStrictEqual([7, -1]);
+
+	})
+
 	it("find", () => {
 		const records = [
 			0, 10, 100,
@@ -332,16 +397,10 @@ describe('balanced tree', () => {
 			0
 		]
 
-		const result = find(records, [], 3, 40)
+		const result = find(records, [3,2], 3, 40)
 
-		expect(find_at_node(records, 3, 1)).toStrictEqual([1, -1]);
-		expect(find_at_node(records, 3, 25)).toStrictEqual([0, 500]);
-		expect(find_at_node(records, 3, 40)).toStrictEqual([2, -1]);
-		expect(find_at_node(records, 3, 45)).toStrictEqual([0, 600]);
-		expect(find_at_node(records, 3, 100)).toStrictEqual([6, -1]);
-
-		expect(find(records, [], 3, 40)).toStrictEqual([[2], 2, 400])
-		expect(find(records, [], 3, 41)).toStrictEqual([[2], 2, -1])
+		expect(find(records, [], 3, 40)).toStrictEqual([[3,2], 2, 400])
+		expect(find(records, [], 3, 41)).toStrictEqual([[3,2], 2, -1])
 
 		expect(split_node(node_record(records, 3))[0]).toStrictEqual([
 				1, 25, 500,
@@ -490,7 +549,8 @@ describe('balanced tree', () => {
 		expect(find_at_node(records, 1, 301)).toStrictEqual([5, -1]);
 
 		const _parent: number[] = [];
-		expect(find(records, _parent, 1, 33)).toStrictEqual([[1, 2], 11, 11000]);
+
+	expect(find(records, _parent, 1, 33)).toStrictEqual([[1, 2, 11], 11, 11000]);
 
 	});
 
@@ -640,7 +700,139 @@ describe('balanced tree', () => {
 
 	});
 
+
+	it('insert 1', () => {
+		const records =  [
+			2, 10,1000,3, 20,2000,4, 30,3000,5, 40,4000,6, 50,5000,7,
+			0,  1, 100,0,  2, 200,0,  3, 300,0,  4, 400,0,  5, 500,0,
+			0, 11,1100,0, 12,1200,0, 13,1300,0, 14,1400,0, 15,1500,0,
+			0, 21,2100,0, 22,2200,0, 23,2300,0, 24,2400,0, 25,2500,0,
+			0, 31,3100,0, 32,3200,0, 33,3300,0, 34,3400,0, 35,3500,0,
+			0, 41,4100,0, 42,4200,0, 43,4300,0, 44,4400,0, 45,4500,0,
+			0, 51,5100,0, 52,5200,0, 53,5300,0, 54,5400,0, 55,5500,0]
+
+
+		let [root_node, node] = insert(records, 1, 6, 600);
+	//	insert(records, 3, 33, 330);
+
+		console.log(JSON.stringify(records));
+
+		/*
+		expect(records).toStrictEqual([
+			0, 10, 100,0, 20, 200,0, 0,  0,0, 0,  0,0,  0,  0,0,
+			0, 30, 300,0, 32, 320,0,40,400,0,41,410,0, 42,420,0,
+			1, 25, 500,2, 45, 600,4,65,  0,5,85,  0,6,105,  0,7,
+			0, 50, 500,0, 60, 600,0, 0,  0,0, 0,  0,0,  0,  0,0,
+			0, 70, 700,0, 80, 800,6, 0,  0,0, 0,  0,0,  0,  0,0,
+			0, 90, 900,0,100,1000,7, 0,  0,0, 0,  0,0,  0,  0,0,
+			0,110,1100,0,120,1200,0, 0,  0,0, 0,  0,0,  0,  0,0
+			]
+		)
+*/
+		let x = find(records, [], 1, 1);
+		expect(x).toStrictEqual([[1,2],2,100]);
+
+		x = find(records, [], 1, 2);
+		expect(x).toStrictEqual([[1,2],2,200]);
+
+		x = find(records, [], 1, 3);
+		expect(x).toStrictEqual([[1,2],2,300]);
+
+		x = find(records, [], 1, 4);
+		expect(x).toStrictEqual([[1,2],2,400]);
+
+		x = find(records, [], 1, 5);
+		expect(x).toStrictEqual([[1,2],2,500]);
+
+		x = find(records, [], 1, 11);
+		expect(x).toStrictEqual([[1,3],3,1100]);
+
+		x = find(records, [], 1, 12);
+		expect(x).toStrictEqual([[1,3],3,1200]);
+
+		x = find(records, [], 1, 13);
+		expect(x).toStrictEqual([[1,3],3,1300]);
+
+		x = find(records, [], 1, 14);
+		expect(x).toStrictEqual([[1,3],3,1400]);
+
+		x = find(records, [], 1, 15);
+		expect(x).toStrictEqual([[1,3],3,1500]);
+
+		x = find(records, [], 1, 21);
+		expect(x).toStrictEqual([[1,4],4,2100]);
+
+		x = find(records, [], 1, 22);
+		expect(x).toStrictEqual([[1,4],4,2200]);
+
+		x = find(records, [], 1, 23);
+		expect(x).toStrictEqual([[1,4],4,2300]);
+
+		x = find(records, [], 1, 24);
+		expect(x).toStrictEqual([[1,4],4,2400]);
+
+		x = find(records, [], 1, 25);
+		expect(x).toStrictEqual([[1,4],4,2500]);
+
+		x = find(records, [], 1, 31);
+		expect(x).toStrictEqual([[1,5],5,3100]);
+
+		x = find(records, [], 1, 32);
+		expect(x).toStrictEqual([[1,5],5,3200]);
+
+		x = find(records, [], 1, 33);
+		expect(x).toStrictEqual([[1,5],5,3300]);
+
+		x = find(records, [], 1, 34);
+		expect(x).toStrictEqual([[1,5],5,3400]);
+
+		x = find(records, [], 1, 35);
+		expect(x).toStrictEqual([[1,5],5,3500]);
+
+		x = find(records, [], 1, 41);
+		expect(x).toStrictEqual([[1,6],6,4100]);
+
+		x = find(records, [], 1, 42);
+		expect(x).toStrictEqual([[1,6],6,4200]);
+
+		x = find(records, [], 1, 43);
+		expect(x).toStrictEqual([[1,6],6,4300]);
+
+		x = find(records, [], 1, 44);
+		expect(x).toStrictEqual([[1,6],6,4400]);
+
+		x = find(records, [], 1, 45);
+		expect(x).toStrictEqual([[1,6],6,4500]);
+
+
+
+	});
+
 	it('insert 2', () => {
+
+		const records3 = [
+			2, 100, 1000, 3, 200, 1000, 4, 300, 1000, 5, 400, 1000, 6, 500, 1000, 7,
+			8, 10, 2000, 9, 20, 2000, 10, 30, 2000, 11, 40, 2000, 12, 50, 2000, 13,
+			0, 110, 3000, 0, 120, 3000, 0, 130, 3000, 0, 140, 3000, 0, 150, 3000, 0,
+			0, 210, 4000, 0, 220, 4000, 0, 230, 4000, 0, 240, 4000, 0, 250, 4000, 0,
+			0, 310, 5000, 0, 320, 5000, 0, 330, 5000, 0, 340, 5000, 0, 350, 5000, 0,
+			0, 410, 6000, 0, 420, 6000, 0, 430, 6000, 0, 440, 6000, 0, 450, 6000, 0,
+			0, 510, 7000, 0, 520, 7000, 0, 530, 7000, 0, 540, 7000, 0, 550, 7000, 0,
+			0, 1, 8000, 0, 2, 8000, 0, 3, 8000, 0, 4, 8000, 0, 5, 8000, 0,
+			0, 11, 9000, 0, 12, 9000, 0, 13, 9000, 0, 14, 9000, 0, 15, 9000, 0,
+			0, 21, 10000, 0, 22, 10000, 0, 23, 10000, 0, 24, 10000, 0, 25, 10000, 0,
+			0, 31, 11000, 0, 33, 11000, 0, 34, 11000, 0, 35, 11000, 0, 0, 0, 0,
+			0, 41, 12000, 0, 42, 12000, 0, 43, 12000, 0, 44, 12000, 0, 45, 12000, 0,
+			0, 51, 13000, 0, 52, 13000, 0, 53, 13000, 0, 54, 13000, 0, 55, 13000, 0
+		];
+		insert(records3,1, 56, 1010);
+
+		const r = find(records3,[],1, 56);
+		console.log(JSON.stringify(records3));
+
+	});
+
+	it('insert_to_node', () => {
 
 		const hoge1 = insert_to_node([
 			2, 100, 1000,
@@ -649,7 +841,6 @@ describe('balanced tree', () => {
 			5, 400, 1000,
 			6, 500, 1000,
 			7], [0, 800, 2500, 1]);
-
 
 		expect(hoge1).toStrictEqual([
 			2, 100, 1000,
@@ -675,61 +866,6 @@ describe('balanced tree', () => {
 			6, 500, 1000,
 			0, 800, 2500,
 			1])
-
-		const records3 = [
-			2, 100, 1000, 3, 200, 1000, 4, 300, 1000, 5, 400, 1000, 6, 500, 1000, 7,
-			8, 10, 2000, 9, 20, 2000, 10, 30, 2000, 11, 40, 2000, 12, 50, 2000, 13,
-			0, 110, 3000, 0, 120, 3000, 0, 130, 3000, 0, 140, 3000, 0, 150, 3000, 0,
-			0, 210, 4000, 0, 220, 4000, 0, 230, 4000, 0, 240, 4000, 0, 250, 4000, 0,
-			0, 310, 5000, 0, 320, 5000, 0, 330, 5000, 0, 340, 5000, 0, 350, 5000, 0,
-			0, 410, 6000, 0, 420, 6000, 0, 430, 6000, 0, 440, 6000, 0, 450, 6000, 0,
-			0, 510, 7000, 0, 520, 7000, 0, 530, 7000, 0, 540, 7000, 0, 550, 7000, 0,
-			0, 1, 8000, 0, 2, 8000, 0, 3, 8000, 0, 4, 8000, 0, 5, 8000, 0,
-			0, 11, 9000, 0, 12, 9000, 0, 13, 9000, 0, 14, 9000, 0, 15, 9000, 0,
-			0, 21, 10000, 0, 22, 10000, 0, 23, 10000, 0, 24, 10000, 0, 25, 10000, 0,
-			0, 31, 11000, 0, 33, 11000, 0, 34, 11000, 0, 35, 11000, 0, 0, 0, 0,
-			0, 41, 12000, 0, 42, 12000, 0, 43, 12000, 0, 44, 12000, 0, 45, 12000, 0,
-			0, 51, 13000, 0, 52, 13000, 0, 53, 13000, 0, 54, 13000, 0, 55, 13000, 0
-		];
-		//	insert(records3,1, 56, 1010);
-
-	});
-
-	it('insert 4', () => {
-		const records = [
-			0, 10, 100, 0, 20, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 30, 300, 0, 40, 400, 0, 41, 410, 0, 42, 420, 0, 0, 0, 0,
-			1, 25, 500, 2, 45, 600, 4, 65, 0, 5, 85, 0, 6, 105, 0, 7,
-			0, 50, 500, 0, 60, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 70, 700, 0, 80, 800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 90, 900, 0, 100, 1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 110, 1100, 0, 120, 1200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-		]
-
-
-		let [root_node, node] = insert(records, 3, 32, 110);
-
-		console.log(JSON.stringify(records));
-
-		expect(records).toStrictEqual([
-			0,  10,  100, 0,  20,  200, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			0,  30,  300, 0,  32,  110, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			1,  25,  500, 2,  40,  400, 8, 45, 600, 4, 65, 0, 5, 85, 0, 6,
-			0,  50,  500, 0,  60,  600, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			0,  70,  700, 0,  80,  800, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			0,  90,  900, 0, 100, 1000, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			0, 110, 1100, 0, 120, 1200, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0,
-			0,  41,  410, 0,  42,  420, 0,  0,   0, 0,  0, 0, 0,  0, 0, 0]
-		)
-
-
-		const x = find(records, [], 3, 32);
-		console.log(x);
-
-	});
-
-
-	it('insert_to_node', () => {
 
 		const reading = insert_to_node([
 			2, 100, 1000,

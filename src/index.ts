@@ -114,19 +114,21 @@ export const split_node = (mut_node: number[]): number[][] => {
 	result.push(init_node());
 	const count = fill_count(mut_node, 1);
 	const full_bytes = to_byte(count);
-	const half_bytes = to_byte(Math.floor(count / 2));
+	const separate_bytes = to_byte(Math.floor(count / 2));
 	let source_offset = 0
 	let dist_offset = 0;
-	for (; source_offset < half_bytes; source_offset++, dist_offset++) {
+	for (; source_offset < separate_bytes; source_offset++, dist_offset++) {
 		result[0][dist_offset] = mut_node[source_offset];
 	}
+	source_offset--;
 	dist_offset = 0;
-	for (; source_offset <= half_bytes + 3; source_offset++, dist_offset++) {
-		result[1][dist_offset] = mut_node[source_offset - 1];
+	for (; source_offset < separate_bytes + entry_size; source_offset++, dist_offset++) {
+		result[1][dist_offset] = mut_node[source_offset];
 	}
+	source_offset--;
 	dist_offset = 0;
-	for (; source_offset <= full_bytes + 1; source_offset++, dist_offset++) {
-		result[2][dist_offset] = mut_node[source_offset - 2];
+	for (; source_offset < full_bytes; source_offset++, dist_offset++) {
+		result[2][dist_offset] = mut_node[source_offset];
 	}
 	return result;
 }
@@ -168,13 +170,16 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 		const target_key: number = key(record, node, offset);
 		if (target_key > find_key) {
 			result_node = lesser(record, node, offset);
+			result_value = -1;
 			break;
 		} else if (target_key === find_key) {
-			result_node = 0;
+			result_node = node;
 			result_value = value(record, node, offset);
 			break;
+		} else {
+			result_node = grater(record, node, offset);
+			result_value = -1;
 		}
-		result_node = grater(record, node, offset);
 	}
 	return [result_node, result_value];
 }
@@ -182,8 +187,8 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 //
 export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
 	const result = find_at_node(record, root_node, find_key);
+	parent_node.push(root_node);
 	if (result[0]) {
-		parent_node.push(root_node);
 		return find(record, parent_node, result[0], find_key);
 	} else {
 		return [parent_node, root_node, result[1]];
@@ -213,6 +218,45 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 	return result;
 }
 
+export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): [root_node: number[], node: number] => {
+
+	const _insert = (parents:number[],new_entry: number[]): boolean => {
+		let oya: any = parents.pop();
+		let overflow = null;
+		if (oya) {
+			const oya_node = node_record(record, oya);
+			overflow = insert_to_node(oya_node, new_entry);
+			if (fill_count(overflow, 1) < entry_count) {
+				update_record(record, oya, overflow);
+			} else {
+				const mut_new_nodes: number[][] = split_node(overflow);
+				const lesser: number = oya;
+				update_record(record, lesser, mut_new_nodes[0]); // lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
+				const grater: number = append_record(record, mut_new_nodes[2]);
+				const _key = key(mut_new_nodes[1], 1, 1);
+				const _value = value(mut_new_nodes[1], 1, 1);
+				if (oya === root_node) {
+					const new_root: number = append_record(record, mut_new_nodes[1]);
+				} else {
+					_insert(parents, [lesser, _key, _value, grater]);
+				}
+
+			}
+		} else {
+			console.log(overflow);
+		}
+		return true;
+	}
+
+	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
+	if (_value < 0) { // not_found then
+		let new_entry = [0, insert_key, insert_value, 0];
+		_insert(parents, new_entry)
+	}
+	return [parents, 1];
+}
+
+/*
 export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): [root_node: number[], node: number, success: boolean] => {
 	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
 	let success = false;
@@ -243,3 +287,4 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 	success = true;
 	return [parents, 1, success];
 }
+*/
