@@ -85,7 +85,7 @@ export const init_node = (): number[] => {
 //
 export const fill_count = (record: number[], node: number): number => {
 	let result = 0;
-	for (let offset = 1; offset <= entry_count; offset++) {
+	for (let offset = 1; offset <= entry_count + 1; offset++) {
 		if (!key(record, node, offset)) {
 			break;
 		} else {
@@ -113,7 +113,7 @@ export const split_node = (mut_node: number[]): number[][] => {
 	result.push(init_node());
 	result.push(init_node());
 	const count = fill_count(mut_node, 1);
-	const full_bytes = to_byte(count + 1);
+	const full_bytes = to_byte(count);
 	const separate_bytes = to_byte(Math.floor(count / 2));
 	let source_offset = 0
 	let dist_offset = 0;
@@ -199,7 +199,7 @@ export const find = (record: number[], parent_node: number[], root_node: number,
 export const insert_to_node = (mut_node: number[], entry: number[]): number[] => {
 	let result: number[] = [];
 	const count = fill_count(mut_node, 1);
-	for (let offset = 1; offset <= count; offset++) {
+	for (let offset = 0; offset <= count; offset++) {
 		const target_key: number = key(mut_node, 1, offset);
 		if (target_key > entry[1]) {
 			mut_node.splice(to_byte(offset - 1) - 1, 1, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
@@ -208,9 +208,8 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 		} else if (target_key === entry[1]) {
 			result = [];
 			break;
-		} else if (offset === 5) {
-			mut_node.pop();
-			mut_node.push(entry[0], entry[1], entry[2], entry[3]);
+		} else if (offset === count) {
+			mut_node.splice(to_byte(offset) - 1, 4, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
 			result = mut_node;
 			break;
 		}
@@ -220,19 +219,19 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 
 export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): boolean => {
 
-	const _insert = (target:number,new_entry: number[]): boolean => {
-			const target_node = node_record(record, target);
-			const inserted_node = insert_to_node(target_node, new_entry);
-			if (fill_count(inserted_node, 1) < entry_count) { // not overflow
-				update_record(record, target, inserted_node);
-			} else {
-				const splited_nodes: number[][] = split_node(inserted_node);
-				const lesser: number = append_record(record, splited_nodes[0]);
-				const grater: number = append_record(record, splited_nodes[2]);
-				const _key = key(splited_nodes[1], 1, 1);
-				const _value = value(splited_nodes[1], 1, 1);
-				update_record(record,target,[lesser, _key, _value, grater])
-			}
+	const _insert = (target: number, new_entry: number[]): boolean => {
+		const target_node = node_record(record, target);
+		const inserted_node = insert_to_node(target_node, new_entry);
+		if (fill_count(inserted_node, 1) <= entry_count) { // not overflow
+			update_record(record, target, inserted_node);
+		} else {
+			const split_nodes: number[][] = split_node(inserted_node);
+			const lesser: number = append_record(record, split_nodes[0]);
+			const grater: number = append_record(record, split_nodes[2]);
+			set_lesser(split_nodes[1], 1, 1, lesser);
+			set_grater(split_nodes[1], 1, 1, grater);
+			update_record(record, target, split_nodes[1])
+		}
 		return true;
 	}
 

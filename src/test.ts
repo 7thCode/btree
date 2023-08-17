@@ -6,7 +6,7 @@
 
 "use strict";
 
-import {append_record, find, find_at_node, grater, insert, insert_to_node, key, lesser, move_entry, node_record, set_grater, set_key, set_lesser, set_value, split_node, update_record, value} from "./index";
+import {append_record, fill_count, find, find_at_node, grater, insert, insert_to_node, key, lesser, move_entry, node_record, set_grater, set_key, set_lesser, set_value, split_node, update_record, value} from "./index";
 
 
 describe('balanced tree', () => {
@@ -292,6 +292,30 @@ describe('balanced tree', () => {
 
 	});
 
+	it ("fill_count", () => {
+
+		const node1 = [1, 10, 100, 0,  0,   0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0]
+
+		expect(fill_count(node1, 1)).toBe(1);
+
+		const node2 = [1, 10, 100, 2, 20, 200, 0,  0,   0, 0,  0,   0, 0,  0,   0, 0,  0,   0, 0];
+		expect(fill_count(node2, 1)).toBe(2);
+
+		const node3 = [1, 10, 100, 2, 20, 200, 3, 30, 300, 0,  0,   0, 0,  0,   0, 0,  0,   0, 0];
+		expect(fill_count(node3, 1)).toBe(3);
+
+		const node4 = [1, 10, 100, 2, 20, 200, 3, 30, 300, 4, 40, 400, 0, 0,    0, 0, 0,    0, 0];
+		expect(fill_count(node4, 1)).toBe(4);
+
+		const node5 = [1, 10, 100, 2, 20, 200, 3, 30, 300, 4, 40, 400, 5, 50, 500, 0,  0,   0, 0];
+		expect(fill_count(node5, 1)).toBe(5);
+
+		const node6 = [1, 10, 100, 2, 20, 200, 3, 30, 300, 4, 40, 400, 5, 50, 500, 6, 60, 600, 0];
+		expect(fill_count(node6, 1)).toBe(6);
+
+	})
+
+
 	it("split node", () => {
 
 		const node = [
@@ -337,7 +361,6 @@ describe('balanced tree', () => {
 	})
 
 	it("find at node", () => {
-
 
 		const node = [2, 10, 100, 3, 20, 200, 4, 30, 300, 5, 40, 400, 6, 50, 500, 7];
 
@@ -619,6 +642,188 @@ describe('balanced tree', () => {
 
 	});
 
+	it('insert_to_node', () => {
+
+		const source = [
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0]
+
+		insert_to_node(source, [1, 10, 100, 2]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		])
+
+		insert_to_node(source, [2, 20, 200, 3]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 20, 200,
+			3, 0, 0,
+			0, 0, 0,
+			0, 0, 0,
+			0
+		])
+
+		insert_to_node(source, [3, 30, 300, 4]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 20, 200,
+			3, 30, 300,
+			4, 0, 0,
+			0, 0, 0,
+			0
+		])
+
+		insert_to_node(source, [4, 40, 400, 5]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 20, 200,
+			3, 30, 300,
+			4, 40, 400,
+			5, 0, 0,
+			0
+		])
+
+		insert_to_node(source, [5, 50, 500, 6]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 20, 200,
+			3, 30, 300,
+			4, 40, 400,
+			5, 50, 500,
+			6
+		])
+
+		insert_to_node(source, [6, 60, 600, 7]);
+
+		expect(source).toStrictEqual([
+			1, 10, 100,
+			2, 20, 200,
+			3, 30, 300,
+			4, 40, 400,
+			5, 50, 500,
+			6, 60, 600,
+			7
+		])
+
+		const hoge1 = insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 800, 2500, 1]);
+
+		expect(hoge1).toStrictEqual([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			0, 800, 2500,
+			1
+		])
+
+		expect(insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 800, 2500, 1])).toStrictEqual([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			0, 800, 2500,
+			1])
+
+		const reading = insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 50, 2500, 1]);
+
+		expect(reading).toStrictEqual([
+			0, 50, 2500,
+			1, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7]);
+
+		const trailing = insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 800, 2500, 1]);
+
+		expect(trailing).toStrictEqual([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			0, 800, 2500,
+			1]);
+
+		const middle = insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 250, 2500, 1]);
+
+		expect(middle).toStrictEqual([
+			2, 100, 1000,
+			3, 200, 1000,
+			0, 250, 2500,
+			1, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7]);
+
+		const middle2 = insert_to_node([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			5, 400, 1000,
+			6, 500, 1000,
+			7], [0, 350, 2500, 1]);
+
+		expect(middle2).toStrictEqual([
+			2, 100, 1000,
+			3, 200, 1000,
+			4, 300, 1000,
+			0, 350, 2500,
+			1, 400, 1000,
+			6, 500, 1000,
+			7]);
+
+
+	})
+
+
 	it('insert', () => {
 		const records = [
 			0, 10, 100, 0, 20, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -645,7 +850,6 @@ describe('balanced tree', () => {
 		const a = find(records, [], 3, 32);
 		const b = find(records, [], 3, 110);
 		console.log(a, b)
-
 
 		const records2 = [
 			2, 100, 1000, 3, 200, 1000, 4, 300, 1000, 5, 400, 1000, 6, 500, 1000, 7,
@@ -731,7 +935,6 @@ describe('balanced tree', () => {
 */
 		let x = find(records, [], 1, 1);
 		expect(x[2]).toStrictEqual(100);
-
 
 		x = find(records, [], 1, 6);
 		expect(x[2]).toStrictEqual(600);
@@ -837,111 +1040,29 @@ describe('balanced tree', () => {
 
 	});
 
-	it('insert_to_node', () => {
+	it('insert 3', () => {
 
-		const hoge1 = insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 800, 2500, 1]);
+		const records:any[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-		expect(hoge1).toStrictEqual([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			0, 800, 2500,
-			1
-		])
+		insert(records, 1, 1, 10);
+		expect(records).toStrictEqual( [0,1,10,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+		insert(records, 1, 2, 20);
+		expect(records).toStrictEqual( [0,1,10,0,2,20,0,0,0,0,0,0,0,0,0,0]);
+		insert(records, 1, 3, 30);
+		expect(records).toStrictEqual( [0,1,10,0,2,20,0,3,30,0,0,0,0,0,0,0]);
+		insert(records, 1, 4, 40);
+		expect(records).toStrictEqual( [0,1,10,0,2,20,0,3,30,0,4,40,0,0,0,0]);
+		insert(records, 1, 5, 50);
+		expect(records).toStrictEqual( [0,1,10,0,2,20,0,3,30,0,4,40,0,5,50,0]);
+		insert(records, 1, 6, 60);
 
-		expect(insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 800, 2500, 1])).toStrictEqual([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			0, 800, 2500,
-			1])
-
-		const reading = insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 50, 2500, 1]);
-
-		expect(reading).toStrictEqual([
-			0, 50, 2500,
-			1, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7]);
-
-		const trailing = insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 800, 2500, 1]);
-
-		expect(trailing).toStrictEqual([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			0, 800, 2500,
-			1]);
-
-		const middle = insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 250, 2500, 1]);
-
-		expect(middle).toStrictEqual([
-			2, 100, 1000,
-			3, 200, 1000,
-			0, 250, 2500,
-			1, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7]);
-
-		const middle2 = insert_to_node([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			5, 400, 1000,
-			6, 500, 1000,
-			7], [0, 350, 2500, 1]);
-
-		expect(middle2).toStrictEqual([
-			2, 100, 1000,
-			3, 200, 1000,
-			4, 300, 1000,
-			0, 350, 2500,
-			1, 400, 1000,
-			6, 500, 1000,
-			7]);
+		const result = 	find(records, [],1,6);
 
 
-	})
+		console.log(JSON.stringify(records));
+
+	});
+
 
 });
 
