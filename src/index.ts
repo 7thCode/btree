@@ -188,7 +188,7 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
 	const result = find_at_node(record, root_node, find_key);
 	parent_node.push(root_node);
-	if (result[1] < 0) {
+	if ((result[1] < 0) && (result[0] != 0)) {
 		return find(record, parent_node, result[0], find_key);
 	} else {
 		return [parent_node, root_node, result[1]];
@@ -230,16 +230,19 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 				update_record(record, oya, overflow);
 			} else {
 				const mut_new_nodes: number[][] = split_node(overflow);
-				const lesser: number = oya;
-				update_record(record, lesser, mut_new_nodes[0]); // lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
+			//	const lesser: number = oya;
+			//	update_record(record, lesser, mut_new_nodes[0]); // lesser 再利用 const lesser: number = append_record(record, mut_new_nodes[0]);
+				const lesser: number = append_record(record, mut_new_nodes[0]);
 				const grater: number = append_record(record, mut_new_nodes[2]);
 				const _key = key(mut_new_nodes[1], 1, 1);
 				const _value = value(mut_new_nodes[1], 1, 1);
-				if (oya === root_node) {
-					const new_root: number = append_record(record, mut_new_nodes[1]);
-				} else {
-					_insert(parents, [lesser, _key, _value, grater]);
-				}
+				update_record(record,oya,[lesser, _key, _value, grater])
+
+		//		if (oya === root_node) {
+		//			const new_root: number = append_record(record, mut_new_nodes[1]);
+		//		} else {
+		//			_insert(parents, [lesser, _key, _value, grater]);
+		//		}
 
 			}
 		} else {

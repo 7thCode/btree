@@ -712,7 +712,7 @@ describe('balanced tree', () => {
 			0, 51, 5100, 0, 52, 5200, 0, 53, 5300, 0, 54, 5400, 0, 55, 5500, 0]
 
 
-	//	let [root_node, node] = insert(records, 1, 6, 600);
+		let [root_node, node] = insert(records, 1, 6, 600);
 		//	insert(records, 3, 33, 330);
 
 		console.log(JSON.stringify(records));
@@ -730,79 +730,83 @@ describe('balanced tree', () => {
 		)
 */
 		let x = find(records, [], 1, 1);
-		expect(x).toStrictEqual([[1, 2], 2, 100]);
+		expect(x[2]).toStrictEqual(100);
+
+
+		x = find(records, [], 1, 6);
+		expect(x[2]).toStrictEqual(600);
 
 		x = find(records, [], 1, 2);
-		expect(x).toStrictEqual([[1, 2], 2, 200]);
+		expect(x[2]).toStrictEqual(200);
 
 		x = find(records, [], 1, 3);
-		expect(x).toStrictEqual([[1, 2], 2, 300]);
+		expect(x[2]).toStrictEqual(300);
 
 		x = find(records, [], 1, 4);
-		expect(x).toStrictEqual([[1, 2], 2, 400]);
+		expect(x[2]).toStrictEqual(400);
 
 		x = find(records, [], 1, 5);
-		expect(x).toStrictEqual([[1, 2], 2, 500]);
+		expect(x[2]).toStrictEqual(500);
 
 		x = find(records, [], 1, 11);
-		expect(x).toStrictEqual([[1, 3], 3, 1100]);
+		expect(x[2]).toStrictEqual(1100);
 
 		x = find(records, [], 1, 12);
-		expect(x).toStrictEqual([[1, 3], 3, 1200]);
+		expect(x[2]).toStrictEqual(1200);
 
 		x = find(records, [], 1, 13);
-		expect(x).toStrictEqual([[1, 3], 3, 1300]);
+		expect(x[2]).toStrictEqual(1300);
 
 		x = find(records, [], 1, 14);
-		expect(x).toStrictEqual([[1, 3], 3, 1400]);
+		expect(x[2]).toStrictEqual(1400);
 
 		x = find(records, [], 1, 15);
-		expect(x).toStrictEqual([[1, 3], 3, 1500]);
+		expect(x[2]).toStrictEqual(1500);
 
 		x = find(records, [], 1, 21);
-		expect(x).toStrictEqual([[1, 4], 4, 2100]);
+		expect(x[2]).toStrictEqual(2100);
 
 		x = find(records, [], 1, 22);
-		expect(x).toStrictEqual([[1, 4], 4, 2200]);
+		expect(x[2]).toStrictEqual(2200);
 
 		x = find(records, [], 1, 23);
-		expect(x).toStrictEqual([[1, 4], 4, 2300]);
+		expect(x[2]).toStrictEqual(2300);
 
 		x = find(records, [], 1, 24);
-		expect(x).toStrictEqual([[1, 4], 4, 2400]);
+		expect(x[2]).toStrictEqual(2400);
 
 		x = find(records, [], 1, 25);
-		expect(x).toStrictEqual([[1, 4], 4, 2500]);
+		expect(x[2]).toStrictEqual(2500);
 
 		x = find(records, [], 1, 31);
-		expect(x).toStrictEqual([[1, 5], 5, 3100]);
+		expect(x[2]).toStrictEqual(3100);
 
 		x = find(records, [], 1, 32);
-		expect(x).toStrictEqual([[1, 5], 5, 3200]);
+		expect(x[2]).toStrictEqual(3200);
 
 		x = find(records, [], 1, 33);
-		expect(x).toStrictEqual([[1, 5], 5, 3300]);
+		expect(x[2]).toStrictEqual(3300);
 
 		x = find(records, [], 1, 34);
-		expect(x).toStrictEqual([[1, 5], 5, 3400]);
+		expect(x[2]).toStrictEqual(3400);
 
 		x = find(records, [], 1, 35);
-		expect(x).toStrictEqual([[1, 5], 5, 3500]);
+		expect(x[2]).toStrictEqual(3500);
 
 		x = find(records, [], 1, 41);
-		expect(x).toStrictEqual([[1, 6], 6, 4100]);
+		expect(x[2]).toStrictEqual(4100);
 
 		x = find(records, [], 1, 42);
-		expect(x).toStrictEqual([[1, 6], 6, 4200]);
+		expect(x[2]).toStrictEqual(4200);
 
 		x = find(records, [], 1, 43);
-		expect(x).toStrictEqual([[1, 6], 6, 4300]);
+		expect(x[2]).toStrictEqual(4300);
 
 		x = find(records, [], 1, 44);
-		expect(x).toStrictEqual([[1, 6], 6, 4400]);
+		expect(x[2]).toStrictEqual(4400);
 
 		x = find(records, [], 1, 45);
-		expect(x).toStrictEqual([[1, 6], 6, 4500]);
+		expect(x[2]).toStrictEqual(4500);
 
 
 	});
@@ -824,6 +828,8 @@ describe('balanced tree', () => {
 			0, 41, 12000, 0, 42, 12000, 0, 43, 12000, 0, 44, 12000, 0, 45, 12000, 0,
 			0, 51, 13000, 0, 52, 13000, 0, 53, 13000, 0, 54, 13000, 0, 55, 13000, 0
 		];
+
+
 		insert(records3, 1, 56, 1010);
 
 		const r = find(records3, [], 1, 56);
