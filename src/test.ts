@@ -630,7 +630,7 @@ describe('balanced tree', () => {
 			0, 110, 1100, 0, 120, 1200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		]
 
-		let [root_node, node] = insert(records, 3, 32, 110);
+		insert(records, 3, 32, 110);
 		expect(records).toStrictEqual([
 			0, 10, 100, 0, 20, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 30, 300, 0, 32, 110, 0, 40, 400, 0, 41, 410, 0, 42, 420, 0,
@@ -641,7 +641,7 @@ describe('balanced tree', () => {
 			0, 110, 1100, 0, 120, 1200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		)
 
-		console.log(root_node, node)
+
 		const a = find(records, [], 3, 32);
 		const b = find(records, [], 3, 110);
 		console.log(a, b)
@@ -712,7 +712,7 @@ describe('balanced tree', () => {
 			0, 51, 5100, 0, 52, 5200, 0, 53, 5300, 0, 54, 5400, 0, 55, 5500, 0]
 
 
-		let [root_node, node] = insert(records, 1, 6, 600);
+		insert(records, 1, 6, 600);
 		//	insert(records, 3, 33, 330);
 
 		console.log(JSON.stringify(records));
