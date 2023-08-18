@@ -7,7 +7,7 @@
 "use strict";
 
 const entry_size = 3;
-const entry_count = 5;
+const entry_count = 250;
 
 export const node_bytes = (): number => {
 	return ((entry_count * entry_size) + 1);
@@ -169,17 +169,6 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 	return [result_node, result_value];
 }
 
-//
-export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
-	const result = find_at_node(record, root_node, find_key);
-	if ((result[1] < 0) && (result[0] != 0)) {
-		parent_node.push(root_node);
-		return find(record, parent_node, result[0], find_key);
-	} else {
-		return [parent_node, root_node, result[1]];
-	}
-}
-
 // lesser: number, new_key: number, value: number, grater: number
 export const insert_to_node = (mut_node: number[], entry: number[]): number[] => {
 	let result: number[] = [];
@@ -202,6 +191,28 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 	return result;
 }
 
+export const update_to_node =(mut_node: number[],　_key: number, update_value:number): void => {
+	const count = fill_count(mut_node, 1);
+	for (let offset = 0; offset <= count; offset++) {
+		const target_key: number = key(mut_node, 1, offset);
+		if (target_key === _key) {
+			set_value(mut_node,1, offset, update_value);
+			break;
+		}
+	}
+}
+
+//
+export const find = (record: number[], parent_node: number[], root_node: number, find_key: number): [parent_node: number[], node: number, value: number] => {
+	const result = find_at_node(record, root_node, find_key);
+	if ((result[1] < 0) && (result[0] != 0)) {
+		parent_node.push(root_node);
+		return find(record, parent_node, result[0], find_key);
+	} else {
+		return [parent_node, root_node, result[1]];
+	}
+}
+
 export const insert = (record: number[], root_node: number, insert_key: number, insert_value: number): boolean => {
 
 	const _insert = (target: number, parent: number, new_entry: number[]): boolean => {
@@ -217,18 +228,19 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 
 		const target_node = node_record(record, target);
 		const inserted_node = insert_to_node(target_node, new_entry);
-		if ((fill_count(inserted_node, 1) + 1) <= entry_count) { // not overflow
+		if ((fill_count(inserted_node, 1) + 1) <= (entry_count)) { // not overflow
 			update_record(record, target, inserted_node);
 		} else {
 			if (parent) {
 				const parent_node = node_record(record, parent);
-				if (fill_count(parent_node, 1) === entry_count) {
+				if (fill_count(parent_node, 1) === (entry_count)) {
 					_split(inserted_node); // parent full
 				} else {
+					// 親nodeに空きがあれば、親nodeにinsert。
+					// targetnodeを再利用。
 					const split_nodes: number[][] = split_node(inserted_node);
 					const lesser: number = target;
 					update_record(record, lesser, split_nodes[0]);
-			//		const lesser: number = append_record(record, split_nodes[0]);
 					const grater: number = append_record(record, split_nodes[2]);
 					const _key = key(split_nodes[1], 1, 1);
 					const _value = value(split_nodes[1], 1, 1);
@@ -242,12 +254,36 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 		return true;
 	}
 
+	const _update = (target: number) => {
+		const target_node = node_record(record, target);
+		update_to_node(target_node,　insert_key, insert_value);
+		update_record(record, target, target_node);
+	}
+
 	let result = false;
 	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
 	if (_value < 0) { // not_found then
 		let new_entry = [0, insert_key, insert_value, 0];
 		const parent_node_index: any = parents.pop();
 		result = _insert(found_node_index, parent_node_index, new_entry)
+	} else {
+		_update(found_node_index)
+	}
+	return result;
+}
+
+export const update = (record: number[], root_node: number, insert_key: number, insert_value: number): boolean => {
+
+	const _update = (target: number) => {
+		const target_node = node_record(record, target);
+		update_to_node(target_node,　insert_key, insert_value);
+		update_record(record, target, target_node);
+	}
+
+	let result = false;
+	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
+	if (_value >= 0) { // not_found then
+		_update(found_node_index);
 	}
 	return result;
 }
