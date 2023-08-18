@@ -114,20 +114,17 @@ export const split_node = (mut_node: number[]): number[][] => {
 	result.push(init_node());
 	const count = fill_count(mut_node, 1);
 	const full_bytes = to_byte(count);
-	const separate_bytes = to_byte(Math.floor(count / 2));
+	const separate_bytes = to_byte(Math.floor(count / 2)); // 中央値で分割
 	let source_offset = 0
-	let dist_offset = 0;
-	for (; source_offset < separate_bytes; source_offset++, dist_offset++) {
+	for (let dist_offset = 0; source_offset < separate_bytes; source_offset++, dist_offset++) {
 		result[0][dist_offset] = mut_node[source_offset];
 	}
 	source_offset--;
-	dist_offset = 0;
-	for (; source_offset < separate_bytes + entry_size; source_offset++, dist_offset++) {
+	for (let dist_offset = 0; source_offset < separate_bytes + entry_size; source_offset++, dist_offset++) {
 		result[1][dist_offset] = mut_node[source_offset];
 	}
 	source_offset--;
-	dist_offset = 0;
-	for (; source_offset < full_bytes; source_offset++, dist_offset++) {
+	for (let dist_offset = 0; source_offset < full_bytes; source_offset++, dist_offset++) {
 		result[2][dist_offset] = mut_node[source_offset];
 	}
 	return result;
@@ -147,18 +144,6 @@ export const append_record = (record: number[], data: number[]): number => {
 		record.push(data[offset]);
 	}
 	return bytes_to_node(record.length);
-}
-
-//
-export const move_entry = (mut_node: number[], count: number): number[] => {
-	let result: number[] = [];
-	const offset_count = entry_count - count;
-	const start = node_bytes();
-	const end = start - (entry_size * offset_count);
-	for (let offset = start; offset > end; offset--) {
-		result.push(mut_node[offset - entry_size - 1]);
-	}
-	return result;
 }
 
 // serial
