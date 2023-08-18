@@ -242,9 +242,6 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 		return true;
 	}
 
-	if (insert_key === 39) {
-		const a =1;
-	}
 	let result = false;
 	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
 	if (_value < 0) { // not_found then
