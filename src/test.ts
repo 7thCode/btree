@@ -139,23 +139,22 @@ describe('balanced tree', () => {
 			3, 30, 300,
 			4, 40, 400,
 			5, 50, 500,
-			6, 60, 600,
-			7
+			6,
 		]
 
 		expect(split_node(node)[0]).toStrictEqual([
 				1, 10, 100,
 				2, 20, 200,
-				3, 30, 300,
-				4, 0, 0,
+				3, 0, 0,
+				0, 0, 0,
 				0, 0, 0,
 				0
 			]
 		);
 
 		expect(split_node(node)[1]).toStrictEqual([
-				4, 40, 400,
-				5, 0, 0,
+				3, 30, 300,
+				4, 0, 0,
 				0, 0, 0,
 				0, 0, 0,
 				0, 0, 0,
@@ -164,9 +163,9 @@ describe('balanced tree', () => {
 		);
 
 		expect(split_node(node)[2]).toStrictEqual([
+				4, 40, 400,
 				5, 50, 500,
-				6, 60, 600,
-				7, 0, 0,
+				6, 0, 0,
 				0, 0, 0,
 				0, 0, 0,
 				0
@@ -276,7 +275,7 @@ describe('balanced tree', () => {
 			7
 		])
 
-		const hoge1 = insert_to_node([
+		const source1 = insert_to_node([
 			2, 100, 1000,
 			3, 200, 1000,
 			4, 300, 1000,
@@ -284,7 +283,7 @@ describe('balanced tree', () => {
 			6, 500, 1000,
 			7], [0, 800, 2500, 1]);
 
-		expect(hoge1).toStrictEqual([
+		expect(source1).toStrictEqual([
 			2, 100, 1000,
 			3, 200, 1000,
 			4, 300, 1000,
@@ -390,8 +389,6 @@ describe('balanced tree', () => {
 			0, 90, 900, 0, 100, 1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		]
 
-		const hoge = split_node(node_record(records, 3));
-
 		expect(split_node(node_record(records, 3))[0]).toStrictEqual(
 			[1, 25, 500, 2, 45, 600, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		);
@@ -447,42 +444,12 @@ describe('balanced tree', () => {
 
 	it("find", () => {
 		const records = [
-			0, 10, 100,
-			0, 20, 200,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0,
-			0, 30, 300,
-			0, 40, 400,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0,
-			1, 25, 500,
-			2, 45, 600,
-			4, 65, 0,
-			5, 85, 0,
-			6, 0, 0,
-			0,
-			0, 50, 500,
-			0, 60, 600,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0,
-			0, 70, 700,
-			0, 80, 800,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0,
-			0, 90, 900,
-			0, 100, 1000,
-			0, 0, 0,
-			0, 0, 0,
-			0, 0, 0,
-			0
+			0, 10, 100, 0, 20, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 30, 300, 0, 40, 400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			1, 25, 500, 2, 45, 600, 4, 65, 0, 5, 85, 0, 6, 0, 0, 0,
+			0, 50, 500, 0, 60, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 70, 700, 0, 80, 800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 90, 900, 0, 100, 1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		]
 
 		expect(find(records, [], 3, 40)).toStrictEqual([[3], 2, 400])
@@ -743,68 +710,36 @@ describe('balanced tree', () => {
 			784, 786, 582, 865, 867, 788, 597, 591, 595, 740
 		];
 
-		/*
-		const keys: number[] = [
-			789,
-			994,
-			996,
-			783,
-			999,
-			43,
-			41,
-			48,
-			383,
-			384,
-			386,
-			293,
-			282,
-			389,
-			365,
-			279,
-			275,
-			381,
-			 34,
-			32,
-			985,
-			 17,
-			39,
-			308,
-			306,
-			377,
-			309,
-			301,
-			355,
-			302,
-			285,
-			380,
-			375,
-			298,
-			378,
-			294,
-			379,
-			299,
-			291,
-		];
-		*/
-
 		const records: any[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 		for (let data = 0; data < keys.length; data++) {
 			insert(records, 1, keys[data], keys[data] * 10);
 		}
 
-		const space_efficiency = records.length / keys.length;
-		console.log(space_efficiency);
-
-		console.log(JSON.stringify(records));
-
+		let each_depth:any[] = [];
+		let depth_sum:number = 0;
 		for (let data = 0; data < keys.length; data++) {
 			const x = find(records, [], 1, keys[data]);
+			each_depth.push(x[0].length);
+			depth_sum += x[0].length;
 			expect(x[2]).toBe(keys[data] * 10);
 		}
 
+		const ave_depth = depth_sum /  keys.length;
+
+		let sum = 0;
+		for (let index = 0; index < keys.length; index++) {
+			sum += (each_depth[index] - ave_depth) ** 2;
+		}
+
+		const　dispersion  = sum /  keys.length;
+
+		const space_efficiency = records.length / keys.length;
+
+		console.log("ave_depth : " + ave_depth +" dispersion : " +dispersion + " space_efficiency : " +space_efficiency);
+
 	});
-	
+
 });
 
 /*
