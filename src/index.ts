@@ -7,7 +7,7 @@
 "use strict";
 
 const entry_size = 3;
-const entry_count = 250;
+const entry_count = 101;
 
 export const node_bytes = (): number => {
 	return ((entry_count * entry_size) + 1);
@@ -191,12 +191,12 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 	return result;
 }
 
-export const update_to_node =(mut_node: number[],　_key: number, update_value:number): void => {
+export const update_to_node = (mut_node: number[], _key: number, update_value: number): void => {
 	const count = fill_count(mut_node, 1);
 	for (let offset = 0; offset <= count; offset++) {
 		const target_key: number = key(mut_node, 1, offset);
 		if (target_key === _key) {
-			set_value(mut_node,1, offset, update_value);
+			set_value(mut_node, 1, offset, update_value);
 			break;
 		}
 	}
@@ -244,7 +244,7 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 					const grater: number = append_record(record, split_nodes[2]);
 					const _key = key(split_nodes[1], 1, 1);
 					const _value = value(split_nodes[1], 1, 1);
-					insert_to_node(parent_node,　[lesser, _key, _value, grater]);
+					insert_to_node(parent_node, [lesser, _key, _value, grater]);
 					update_record(record, parent, parent_node);
 				}
 			} else {
@@ -256,7 +256,7 @@ export const insert = (record: number[], root_node: number, insert_key: number, 
 
 	const _update = (target: number) => {
 		const target_node = node_record(record, target);
-		update_to_node(target_node,　insert_key, insert_value);
+		update_to_node(target_node, insert_key, insert_value);
 		update_record(record, target, target_node);
 	}
 
@@ -276,7 +276,7 @@ export const update = (record: number[], root_node: number, insert_key: number, 
 
 	const _update = (target: number) => {
 		const target_node = node_record(record, target);
-		update_to_node(target_node,　insert_key, insert_value);
+		update_to_node(target_node, insert_key, insert_value);
 		update_record(record, target, target_node);
 	}
 
@@ -286,4 +286,20 @@ export const update = (record: number[], root_node: number, insert_key: number, 
 		_update(found_node_index);
 	}
 	return result;
+}
+
+export const binary_search = (data:number[], key:number):number => {
+
+	const compare = (data: number[], search: number, pivot: number, delta:number): number => {
+		delta = delta / 2;
+		if (data[pivot] === search) {
+			return pivot;
+		} else if (data[pivot] > search) {
+			return compare(data, search, pivot - Math.ceil(delta), delta);
+		} else {
+			return compare(data, search, pivot + Math.floor(delta), delta);
+		}
+	}
+
+	return compare(data, key, Math.ceil((data.length - 1) / 2), 1);
 }
