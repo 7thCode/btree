@@ -288,18 +288,27 @@ export const update = (record: number[], root_node: number, insert_key: number, 
 	return result;
 }
 
+
+
+
+
 export const binary_search = (data:number[], key:number):number => {
 
 	const compare = (data: number[], search: number, pivot: number, delta:number): number => {
-		delta = delta / 2;
-		if (data[pivot] === search) {
-			return pivot;
-		} else if (data[pivot] > search) {
-			return compare(data, search, pivot - Math.ceil(delta), delta);
-		} else {
-			return compare(data, search, pivot + Math.floor(delta), delta);
+		let result:number = -1;
+		if (delta > 1) {
+			delta = Math.ceil(delta / 2);
+			if (data[pivot] === search) {
+				result = pivot;
+			} else if (data[pivot] > search) {
+				result = compare(data, search, pivot - delta, delta);
+			} else {
+				result = compare(data, search, pivot + delta, delta);
+			}
 		}
+		return result;
 	}
 
-	return compare(data, key, Math.ceil((data.length - 1) / 2), 1);
+	return compare(data, key, Math.ceil((data.length - 1) / 2), ((data.length - 1) / 2));
 }
+

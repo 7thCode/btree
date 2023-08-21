@@ -1580,7 +1580,11 @@ describe('balanced tree', () => {
 	it('binary_search', () => {
 
 		const s = [1,2,3,6,7,8,9,11,14,15,17];
-		console.log(binary_search(s, 8));
+
+		expect(binary_search(s, 1)).toBe(0);
+		expect(binary_search(s, 8)).toBe(5);
+		expect(binary_search(s, 8)).toBe(5);
+		expect(binary_search(s, 10)).toBe(-1);
 
 	})
 
