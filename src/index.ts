@@ -230,7 +230,7 @@ export const insert_to_node = (mut_node: number[], entry: number[]): number[] =>
 			result = mut_node;
 			break;
 		} else if (target_key === entry[1]) {
-			result = [];
+			result = mut_node;
 			break;
 		} else if (offset === count) {
 			mut_node.splice(to_byte(offset) - 1, 4, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
@@ -349,8 +349,8 @@ export const closest_min = (record: number[], node: number, entry_index: number)
 		}
 	}
 
-	const e = entry(record, node, entry_index);
-	const min_node = e[0];
+	const _entry = entry(record, node, entry_index);
+	const min_node = _entry[0];
 	if (min_node) {
 		return closest_min_node(record, min_node);
 	} else {
