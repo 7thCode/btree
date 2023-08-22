@@ -9,6 +9,15 @@
 const entry_size = 3;
 export const entry_count = 5;
 
+
+const get = (record:number[], offset:number): number => {
+	return record[offset];
+}
+
+const set = (record:number[], offset:number, value:number): void => {
+	record[offset] = value;
+}
+
 export const node_bytes = (): number => {
 	return ((entry_count * entry_size) + 1);
 }
@@ -54,35 +63,44 @@ const to_graiter_index_delta = (index: number): number => {
 }
 
 export const lesser = (record: number[], node: number, offset: number): number => {
-	return record[to_index(node) + to_lesser_index_delta(offset)];
+	// return record[to_index(node) + to_lesser_index_delta(offset)];
+	return get(record, to_index(node) + to_lesser_index_delta(offset));
 }
 
 export const grater = (record: number[], node: number, offset: number): number => {
-	return record[to_index(node) + to_graiter_index_delta(offset)];
+	//return record[to_index(node) + to_graiter_index_delta(offset)];
+	return get(record,to_index(node) + to_graiter_index_delta(offset));
 }
 
 export const key = (record: number[], node: number, offset: number): number => {
-	return record[to_index(node) + to_key_index_delta(offset)];
+	//return record[to_index(node) + to_key_index_delta(offset)];
+	return get(record,to_index(node) + to_key_index_delta(offset));
 }
 
 export const value = (record: number[], node: number, offset: number): number => {
-	return record[to_index(node) + to_value_index_delta(offset)];
+	//return record[to_index(node) + to_value_index_delta(offset)];
+	return get(record,to_index(node) + to_value_index_delta(offset));
 }
 
 export const set_lesser = (record: number[], node: number, offset: number, value: number): void => {
-	record[to_index(node) + to_lesser_index_delta(offset)] = value;
+	//record[to_index(node) + to_lesser_index_delta(offset)] = value;
+	set(record,to_index(node) + to_lesser_index_delta(offset) , value);
+
 }
 
 export const set_grater = (record: number[], node: number, offset: number, value: number): void => {
-	record[to_index(node) + to_graiter_index_delta(offset)] = value;
+	//record[to_index(node) + to_graiter_index_delta(offset)] = value;
+	set(record, to_index(node) + to_graiter_index_delta(offset) , value);
 }
 
 export const set_key = (record: number[], node: number, offset: number, value: number): void => {
-	record[to_index(node) + to_key_index_delta(offset)] = value;
+	//record[to_index(node) + to_key_index_delta(offset)] = value;
+	set(record, to_index(node) + to_key_index_delta(offset) , value);
 }
 
 export const set_value = (record: number[], node: number, offset: number, value: number): void => {
-	record[to_index(node) + to_value_index_delta(offset)] = value;
+	// record[to_index(node) + to_value_index_delta(offset)] = value;
+	set(record,to_index(node) + to_value_index_delta(offset), value);
 }
 
 //
@@ -113,7 +131,7 @@ export const node_record = (record: number[], node: number): number[] => {
 	const start = to_index(node);
 	const size = node_bytes();
 	for (let offset = 0; offset < size; offset++) {
-		result.push(record[start + offset]);
+		result.push( get(record,start + offset));
 	}
 	return result;
 }
@@ -146,7 +164,8 @@ export const split_node = (mut_node: number[]): number[][] => {
 export const update_record = (record: number[], node: number, data: number[]): void => {
 	const start = to_index(node);
 	for (let offset = 0; offset < node_bytes(); offset++) {
-		record[start + offset] = data[offset];
+	//	record[start + offset] = data[offset];
+		set(record, start + offset, data[offset]);
 	}
 }
 
