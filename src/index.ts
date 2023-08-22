@@ -7,7 +7,7 @@
 "use strict";
 
 const entry_size = 3;
-const entry_count = 101;
+export const entry_count = 5;
 
 export const node_bytes = (): number => {
 	return ((entry_count * entry_size) + 1);
@@ -19,6 +19,18 @@ export const bytes_to_node = (bytes: number): number => {
 
 export const to_byte = (entry_count: number): number => {
 	return (entry_count * entry_size) + 1;
+}
+
+export const entry = (record: number[], node: number, offset: number): number[] => {
+	return [lesser(record, node, offset), key(record, node, offset), value(record, node, offset), grater(record, node, offset)];
+}
+
+export const min_entry = (record: number[], node: number): number[] => {
+	return entry(record, node, 1);
+}
+
+export const max_entry = (record: number[], node: number): number[] => {
+	return entry(record, node, fill_count(record,node));
 }
 
 export const to_index = (node: number): number => {
@@ -169,6 +181,25 @@ export const find_at_node = (record: number[], node: number, find_key: number): 
 	return [result_node, result_value];
 }
 
+export const erase_entry = (record: number[], node: number,  offset: number): void => {
+	const target_node = node_record(record, node);
+	target_node.splice(to_byte(offset - 1) - 1, 3); // Keyが内輪で最大の「前」に追加。
+	target_node.push(0, 0, 0);
+	update_record(record, node, target_node);
+}
+
+export const exactly_offset = (mut_node: number[], node: number, find_key: number): number => {
+	let result: number = -1;
+	const count = fill_count(mut_node, node);
+	for (let offset = 1; offset <= count; offset++) {
+		const target_key: number = key(mut_node, node, offset);
+		if (target_key === find_key) {
+			result = offset;
+		}
+	}
+	return result;
+}
+
 // lesser: number, new_key: number, value: number, grater: number
 export const insert_to_node = (mut_node: number[], entry: number[]): number[] => {
 	let result: number[] = [];
@@ -288,14 +319,51 @@ export const update = (record: number[], root_node: number, insert_key: number, 
 	return result;
 }
 
+export const closest_min = (record: number[], node: number, entry_index: number): number => {
 
+	const closest_min_node = (record: number[], node: number): number => {
+		const min_node = min_entry(record, node)[0];
+		if (min_node) {
+			return closest_min_node(record, min_node);
+		} else {
+			return node;
+		}
+	}
 
+	const e = entry(record, node, entry_index);
+	const min_node = e[0];
+	if (min_node) {
+		return closest_min_node(record, min_node);
+	} else {
+		return node;
+	}
+}
 
+export const erase = (record: number[], root_node: number, key: number): boolean => {
+	let result = false;
+	let [parents, found_node_index, _value] = find(record, [], root_node, key);
+	if (_value > 0) {
+		const offset = exactly_offset(record, found_node_index, key);
+		const _entry = entry(record, found_node_index, offset);
+		const lesser_node_index = _entry[0];
+		if (lesser_node_index) {
+			const closest_min_node = closest_min(record, found_node_index, offset);
+			const m = max_entry(record, closest_min_node);
+			erase_entry(record, closest_min_node, fill_count(record,closest_min_node));
+			set_key(record,found_node_index, offset,m[1]);
+			set_value(record,found_node_index, offset,m[2]);
+		} else {
+			erase_entry(record,found_node_index,offset);
+		}
+		result = true;
+	}
+	return result;
+}
 
-export const binary_search = (data:number[], key:number):number => {
+export const binary_search = (data: number[], key: number): number => {
 
-	const compare = (data: number[], search: number, pivot: number, delta:number): number => {
-		let result:number = -1;
+	const compare = (data: number[], search: number, pivot: number, delta: number): number => {
+		let result: number = -1;
 		if (delta > 1) {
 			delta = Math.ceil(delta / 2);
 			if (data[pivot] === search) {
