@@ -420,7 +420,7 @@ export const Erase = (record: Record, key: Key): boolean => {
 
 
 // バイナリーサーチ
-export const binary_search = (data: number[], key: number): number => {
+export const binary_search = (data: number[], key: number, near: boolean = false): number => {
 
 	const compare = (data: number[], search: number, pivot: number, delta: number): number => {
 		let result: number = -1;
@@ -436,8 +436,12 @@ export const binary_search = (data: number[], key: number): number => {
 		} else if (delta === 1) {
 			if (data[pivot] === search) {
 				result = pivot;
-			} else {
+			} else if (!near) {
 				result = -1;
+			} else if (data[pivot] > search) {
+				result = pivot - 1;
+			} else {
+				result = pivot;
 			}
 		}
 		return result;
