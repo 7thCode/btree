@@ -234,8 +234,8 @@ export const exactly_offset = (record: Record, node: ID, find_key: Key): Offset 
 	return result;
 }
 
-// うちわで最も近いEntryを含むNode
-export const closest_min = (record: Record, node: ID, entry_index: Key): ID => {
+// Less then
+export const less_than = (record: Record, node: ID, entry_index: Key): ID => {
 
 	const closest_min_node = (record: Record, node: ID): ID => {
 		const min_node: ID = min_entry(record, node)[0];
@@ -246,14 +246,35 @@ export const closest_min = (record: Record, node: ID, entry_index: Key): ID => {
 		}
 	}
 
-	const _entry: Entry = entry(record, node, entry_index);
-	const min_node: ID = _entry[0];
+	const min_node: ID = lesser(record, node, entry_index);
 	if (min_node) {
 		return closest_min_node(record, min_node);
 	} else {
 		return node;
 	}
 }
+
+
+// grater then
+export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
+
+	const closest_max_node = (record: Record, node: ID): ID => {
+		const max_node: ID = max_entry(record, node)[3];
+		if (max_node) {
+			return closest_max_node(record, max_node);
+		} else {
+			return node;
+		}
+	}
+
+	const max_node: ID = grater(record, node, entry_index);
+	if (max_node) {
+		return closest_max_node(record, max_node);
+	} else {
+		return node;
+	}
+}
+
 
 // lesser: number, new_key: number, value: number, grater: number
 // 一つのノードに正しい順序でEntryを追加。Entry個数は追加
@@ -345,10 +366,11 @@ export const insert = (record: Record, root_node: ID, insert_key: Key, insert_va
 		return true;
 	}
 
-	const _update = (target: ID) => {
+	const _update = (target: ID): boolean => {
 		const target_node: Node = node_record(record, target);
 		update_to_node(target_node, insert_key, insert_value);
 		update_record(record, target, target_node);
+		return true;
 	}
 
 	let result: boolean = false;
@@ -358,7 +380,7 @@ export const insert = (record: Record, root_node: ID, insert_key: Key, insert_va
 		const parent_node_index: any = parents.pop();
 		result = _insert(found_node_index, parent_node_index, new_entry)
 	} else {
-		_update(found_node_index)
+		result = _update(found_node_index);
 	}
 	return result;
 }
@@ -366,38 +388,75 @@ export const insert = (record: Record, root_node: ID, insert_key: Key, insert_va
 // 更新
 export const update = (record: Record, root_node: ID, insert_key: Key, insert_value: Value): boolean => {
 
-	const _update = (target: number) => {
+	const _update = (target: number): boolean => {
 		const target_node = node_record(record, target);
 		update_to_node(target_node, insert_key, insert_value);
 		update_record(record, target, target_node);
+		return true;
 	}
 
 	let result: boolean = false;
 	let [parents, found_node_index, _value] = find(record, [], root_node, insert_key);
 	if (_value >= 0) { // not_found then
-		_update(found_node_index);
+		result = _update(found_node_index);
 	}
+
 	return result;
 }
 
 //　削除
 export const erase = (record: Record, root_node: ID, key: Key): boolean => {
+
+	if (key === 437) {
+		const a = 1
+	}
+
 	let result: boolean = false;
 	let [parents, found_node_index, _value] = find(record, [], root_node, key);
 	if (_value > 0) {
 		const offset: Offset = exactly_offset(record, found_node_index, key);
-		const _entry: Entry = entry(record, found_node_index, offset);
-		const lesser_node_index = _entry[0];
+		const lesser_node_index: ID = lesser(record, found_node_index, offset);
+		const grater_node_index: ID = grater(record, found_node_index, offset);
+		const closest_min_node: ID = less_than(record, found_node_index, offset);
+		const closest_max_node: ID = grater_than(record, found_node_index, offset);
+
 		if (lesser_node_index) {
-			const closest_min_node: ID = closest_min(record, found_node_index, offset);
 			const erase: Entry = max_entry(record, closest_min_node);
 			erase_entry(record, closest_min_node, fill_count(record, closest_min_node));
+			if (fill_count(record, closest_min_node) === 0) {
+				set_lesser(record, found_node_index, offset, 0);
+			}
+			set_key(record, found_node_index, offset, erase[1]);
+			set_value(record, found_node_index, offset, erase[2]);
+		} else if (grater_node_index) {
+			const erase: Entry = min_entry(record, closest_max_node);
+			erase_entry(record, closest_max_node, 1);
+			if (fill_count(record, closest_max_node) === 0) {
+				set_grater(record, found_node_index, offset, 0);
+			}
 			set_key(record, found_node_index, offset, erase[1]);
 			set_value(record, found_node_index, offset, erase[2]);
 		} else {
 			erase_entry(record, found_node_index, offset);
 		}
+
+		if (fill_count(record, found_node_index) === 0) {
+			if (parents.length > 0) {
+				const parent = parents[parents.length - 1];
+				for (let offset = 1; offset < fill_count(record, parent) + 1; offset++) {
+					if (lesser(record, parent, offset) === closest_min_node) {
+						set_lesser(record, parent, offset, 0);
+					}
+					if (grater(record, parent, offset) === closest_max_node) {
+						set_grater(record, parent, offset, 0);
+					}
+				}
+			}
+		}
+
 		result = true;
+	} else {
+		const a = 1;
 	}
 	return result;
 }
@@ -420,7 +479,7 @@ export const Erase = (record: Record, key: Key): boolean => {
 
 
 // バイナリーサーチ
-export const binary_search = (data: number[], key: number, near: boolean = false): number => {
+export const binary_search = (data: number[], key: number, range: number = 0): number => {
 
 	const compare = (data: number[], search: number, pivot: number, delta: number): number => {
 		let result: number = -1;
@@ -436,10 +495,12 @@ export const binary_search = (data: number[], key: number, near: boolean = false
 		} else if (delta === 1) {
 			if (data[pivot] === search) {
 				result = pivot;
-			} else if (!near) {
+			} else if (range === 0) {
 				result = -1;
-			} else if (data[pivot] > search) {
+			} else if ((data[pivot] > search) && range < 0) {
 				result = pivot - 1;
+			} else if ((data[pivot] < search) && range > 0) {
+				result = pivot + 1;
 			} else {
 				result = pivot;
 			}
