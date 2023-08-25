@@ -996,9 +996,8 @@ describe('balanced tree', () => {
 		}
 
 		for (let data = 0; data < keys.length; data++) {
-			erase(records, 1, keys[data]);
-
-			console.log( keys[data], JSON.stringify(records))
+		erase(records, 1, keys[data]);
+	//		console.log( keys[data], JSON.stringify(records))
 	//		expect(find(records, [], 1, keys[data])[2]).toBe(-1);
 		}
 

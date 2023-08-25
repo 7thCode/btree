@@ -190,29 +190,6 @@ export const append_record = (record: Record, mut_node: Node): number => {
 	return bytes_to_node(record.data.length);
 }
 
-// serial
-export const find_at_node = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
-	let result_value: number = -1;
-	let result_node: number = 0;
-	const count = fill_count(record, node);
-	for (let offset = 1; offset <= count; offset++) {
-		const target_key: number = key(record, node, offset);
-		if (target_key > find_key) {
-			result_node = lesser(record, node, offset);
-			result_value = -1;
-			break;
-		} else if (target_key === find_key) {
-			result_node = node;
-			result_value = value(record, node, offset);
-			break;
-		} else {
-			result_node = grater(record, node, offset);
-			result_value = -1;
-		}
-	}
-	return [result_node, result_value];
-}
-
 // 一つのノードからEntryを削除
 export const erase_entry = (record: Record, node: ID, offset: Offset): void => {
 	const mut_node: Node = node_record(record, node);
@@ -259,7 +236,7 @@ export const less_than = (record: Record, node: ID, entry_index: Key): ID => {
 export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 
 	const closest_max_node = (record: Record, node: ID): ID => {
-		const max_node: ID = max_entry(record, node)[3];
+		const max_node: ID = max_entry(record, node)[0];
 		if (max_node) {
 			return closest_max_node(record, max_node);
 		} else {
@@ -273,6 +250,30 @@ export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 	} else {
 		return node;
 	}
+}
+
+
+// serial
+export const find_at_node = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
+	let result_value: number = -1;
+	let result_node: number = 0;
+	const count = fill_count(record, node);
+	for (let offset = 1; offset <= count; offset++) {
+		const target_key: number = key(record, node, offset);
+		if (target_key > find_key) {
+			result_node = lesser(record, node, offset);
+			result_value = -1;
+			break;
+		} else if (target_key === find_key) {
+			result_node = node;
+			result_value = value(record, node, offset);
+			break;
+		} else {
+			result_node = grater(record, node, offset);
+			result_value = -1;
+		}
+	}
+	return [result_node, result_value];
 }
 
 
@@ -407,7 +408,7 @@ export const update = (record: Record, root_node: ID, insert_key: Key, insert_va
 //　削除
 export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 
-	if (key === 437) {
+	if (key === 2142) {
 		const a = 1
 	}
 
@@ -456,6 +457,7 @@ export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 
 		result = true;
 	} else {
+		console.log(key,JSON.stringify(record));
 		const a = 1;
 	}
 	return result;
