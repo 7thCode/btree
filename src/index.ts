@@ -211,7 +211,7 @@ export const exactly_offset = (record: Record, node: ID, find_key: Key): Offset 
 	return result;
 }
 
-// Less then
+// Less than
 export const less_than = (record: Record, node: ID, entry_index: Key): ID => {
 
 	const closest_min_node = (record: Record, node: ID): ID => {
@@ -231,8 +231,7 @@ export const less_than = (record: Record, node: ID, entry_index: Key): ID => {
 	}
 }
 
-
-// grater then
+// grater than
 export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 
 	const closest_max_node = (record: Record, node: ID): ID => {
@@ -252,6 +251,62 @@ export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 	}
 }
 
+// binary search
+export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
+
+	const search = (mut_node: Node, find_key: Key, range: number = 0): number => {
+
+		const compare = (node: Node, search: number, pivot: number, delta: number): number => {
+			let result: number = -1;
+			const _key = key(node, 1, pivot);
+			if (delta > 1) {
+				delta = Math.ceil(delta / 2);
+				if (_key === search) {
+					result = pivot;
+				} else if (_key > search) {
+					result = compare(node, search, pivot - delta, delta);
+				} else {
+					result = compare(node, search, pivot + delta, delta);
+				}
+			} else if (delta === 1) {
+				if (_key === search) {
+					result = pivot;
+				} else if (range === 0) {
+					result = -1;
+				} else if ((_key > search) && range < 0) {
+					result = pivot - 1;
+				} else if ((_key < search) && range > 0) {
+					result = pivot + 1;
+				} else {
+					result = pivot;
+				}
+			}
+			return result;
+		}
+
+		let length = fill_count(mut_node, 1)
+
+		return compare(mut_node, find_key, Math.ceil((length) / 2), ((length) / 2));
+	}
+
+	let result_value: number = -1;
+	let result_node: number = 0;
+
+	const _node: Node = node_record(record, node);
+
+	const offset = search(_node, find_key, -1);
+	if (key(_node, 1, offset) > find_key) {
+		result_node = lesser(record, node, offset);
+		result_value = -1;
+	} else if (key(_node, 1, offset) === find_key) {
+		result_node = node;
+		result_value = value(record, node, offset);
+	} else {
+		result_node = grater(record, node, offset);
+		result_value = -1;
+	}
+	return [result_node, result_value];
+}
 
 // serial
 export const find_at_node = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
@@ -418,21 +473,21 @@ export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 		const offset: Offset = exactly_offset(record, found_node_index, key);
 		const lesser_node_index: ID = lesser(record, found_node_index, offset);
 		const grater_node_index: ID = grater(record, found_node_index, offset);
-		const closest_min_node: ID = less_than(record, found_node_index, offset);
-		const closest_max_node: ID = grater_than(record, found_node_index, offset);
+		const less_than_node: ID = less_than(record, found_node_index, offset);
+		const grater_than_node: ID = grater_than(record, found_node_index, offset);
 
 		if (lesser_node_index) {
-			const erase: Entry = max_entry(record, closest_min_node);
-			erase_entry(record, closest_min_node, fill_count(record, closest_min_node));
-			if (fill_count(record, closest_min_node) === 0) {
+			const erase: Entry = max_entry(record, less_than_node);
+			erase_entry(record, less_than_node, fill_count(record, less_than_node));
+			if (fill_count(record, less_than_node) === 0) {
 				set_lesser(record, found_node_index, offset, 0);
 			}
 			set_key(record, found_node_index, offset, erase[1]);
 			set_value(record, found_node_index, offset, erase[2]);
 		} else if (grater_node_index) {
-			const erase: Entry = min_entry(record, closest_max_node);
-			erase_entry(record, closest_max_node, 1);
-			if (fill_count(record, closest_max_node) === 0) {
+			const erase: Entry = min_entry(record, grater_than_node);
+			erase_entry(record, grater_than_node, 1);
+			if (fill_count(record, grater_than_node) === 0) {
 				set_grater(record, found_node_index, offset, 0);
 			}
 			set_key(record, found_node_index, offset, erase[1]);
@@ -440,25 +495,24 @@ export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 		} else {
 			erase_entry(record, found_node_index, offset);
 		}
-
-		if (fill_count(record, found_node_index) === 0) {
-			if (parents.length > 0) {
-				const parent = parents[parents.length - 1];
-				for (let offset = 1; offset < fill_count(record, parent) + 1; offset++) {
-					if (lesser(record, parent, offset) === closest_min_node) {
-						set_lesser(record, parent, offset, 0);
-					}
-					if (grater(record, parent, offset) === closest_max_node) {
-						set_grater(record, parent, offset, 0);
+		/*
+				if (fill_count(record, found_node_index) === 0) {
+					if (parents.length > 0) {
+						const parent = parents[parents.length - 1];
+						for (let offset = 1; offset < fill_count(record, parent) + 1; offset++) {
+							if (lesser(record, parent, offset) === closest_min_node) {
+								set_lesser(record, parent, offset, 0);
+							}
+							if (grater(record, parent, offset) === closest_max_node) {
+								set_grater(record, parent, offset, 0);
+							}
+						}
 					}
 				}
-			}
-		}
-
+		*/
 		result = true;
 	} else {
-		console.log(key,JSON.stringify(record));
-		const a = 1;
+		console.log(key, JSON.stringify(record));
 	}
 	return result;
 }
@@ -479,29 +533,31 @@ export const Erase = (record: Record, key: Key): boolean => {
 	return erase(record, 1, key);
 }
 
-
 // バイナリーサーチ
-export const binary_search = (data: number[], key: number, range: number = 0): number => {
+export const BinarySearch = (data: number[], key: number, near: number = 0): number => {
 
-	const compare = (data: number[], search: number, pivot: number, delta: number): number => {
-		let result: number = -1;
-		if (delta > 1) {
-			delta = Math.ceil(delta / 2);
-			if (data[pivot] === search) {
+	const compare = (data: number[], search: number, start: number, end: number, near: number): number => {
+		var result: number = -1;
+		var key: number;
+		var _range:number = end - start;
+		var pivot: number = (Math.floor(_range/2)) + start;
+		key = data[pivot];
+		if (_range > 1) {
+			if (key == search) {
 				result = pivot;
-			} else if (data[pivot] > search) {
-				result = compare(data, search, pivot - delta, delta);
+			} else if (key > search) {
+				result = compare(data, search, start, pivot, near);
 			} else {
-				result = compare(data, search, pivot + delta, delta);
+				result = compare(data, search, pivot, end, near);
 			}
-		} else if (delta === 1) {
-			if (data[pivot] === search) {
+		} else if (_range == 1) {
+			if (key == search) {
 				result = pivot;
-			} else if (range === 0) {
+			} else if (near == 0) {
 				result = -1;
-			} else if ((data[pivot] > search) && range < 0) {
+			} else if ((key > search) && near < 0) {
 				result = pivot - 1;
-			} else if ((data[pivot] < search) && range > 0) {
+			} else if ((key < search) && near > 0) {
 				result = pivot + 1;
 			} else {
 				result = pivot;
@@ -510,8 +566,10 @@ export const binary_search = (data: number[], key: number, range: number = 0): n
 		return result;
 	}
 
-	return compare(data, key, Math.ceil((data.length - 1) / 2), ((data.length - 1) / 2));
+	return compare(data, key, 0, data.length, near);
 }
+
+
 
 // adler32 Hash
 export const adler32 = (S: string): number => {
