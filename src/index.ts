@@ -235,6 +235,7 @@ export const less_than = (record: Record, node: ID, entry_index: Key): ID => {
 export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 
 	const closest_max_node = (record: Record, node: ID): ID => {
+
 		const max_node: ID = max_entry(record, node)[0];
 		if (max_node) {
 			return closest_max_node(record, max_node);
@@ -256,26 +257,27 @@ export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: I
 
 	const search = (mut_node: Node, find_key: Key, range: number = 0): number => {
 
-		const compare = (node: Node, search: number, pivot: number, delta: number): number => {
+		const compare = (data: Node, search: number, start: number, end: number, near: number): number => {
 			let result: number = -1;
-			const _key = key(node, 1, pivot);
-			if (delta > 1) {
-				delta = Math.ceil(delta / 2);
+			const _range: number = end - start;
+			const pivot: number = (Math.floor(_range / 2)) + start;
+			const _key = key(data, 1, pivot);
+			if (_range > 1) {
 				if (_key === search) {
 					result = pivot;
 				} else if (_key > search) {
-					result = compare(node, search, pivot - delta, delta);
+					result = compare(data, search, start, pivot, near);
 				} else {
-					result = compare(node, search, pivot + delta, delta);
+					result = compare(data, search, pivot, end, near);
 				}
-			} else if (delta === 1) {
+			} else if (_range <= 1) {
 				if (_key === search) {
 					result = pivot;
-				} else if (range === 0) {
+				} else if (near === 0) {
 					result = -1;
-				} else if ((_key > search) && range < 0) {
+				} else if ((_key > search) && near < 0) {
 					result = pivot - 1;
-				} else if ((_key < search) && range > 0) {
+				} else if ((_key < search) && near > 0) {
 					result = pivot + 1;
 				} else {
 					result = pivot;
@@ -284,9 +286,8 @@ export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: I
 			return result;
 		}
 
-		let length = fill_count(mut_node, 1)
+		return compare(mut_node, find_key, 1, fill_count(mut_node, 1) + 1, range);
 
-		return compare(mut_node, find_key, Math.ceil((length) / 2), ((length) / 2));
 	}
 
 	let result_value: number = -1;
@@ -371,7 +372,7 @@ export const update_to_node = (mut_node: Node, _key: Key, update_value: Value): 
 
 //　検索
 export const find = (record: Record, parent_node: number[], root_node: ID, find_key: Key): [parent_node: number[], node: ID, value: Value] => {
-	const result = find_at_node(record, root_node, find_key);
+	const result = find_at_node2(record, root_node, find_key);
 	if ((result[1] < 0) && (result[0] != 0)) {
 		parent_node.push(root_node);
 		return find(record, parent_node, result[0], find_key);
@@ -539,8 +540,8 @@ export const BinarySearch = (data: number[], key: number, near: number = 0): num
 	const compare = (data: number[], search: number, start: number, end: number, near: number): number => {
 		var result: number = -1;
 		var key: number;
-		var _range:number = end - start;
-		var pivot: number = (Math.floor(_range/2)) + start;
+		var _range: number = end - start;
+		var pivot: number = (Math.floor(_range / 2)) + start;
 		key = data[pivot];
 		if (_range > 1) {
 			if (key == search) {
@@ -550,7 +551,7 @@ export const BinarySearch = (data: number[], key: number, near: number = 0): num
 			} else {
 				result = compare(data, search, pivot, end, near);
 			}
-		} else if (_range == 1) {
+		} else if (_range <= 1) {
 			if (key == search) {
 				result = pivot;
 			} else if (near == 0) {
@@ -568,7 +569,6 @@ export const BinarySearch = (data: number[], key: number, near: number = 0): num
 
 	return compare(data, key, 0, data.length, near);
 }
-
 
 
 // adler32 Hash
