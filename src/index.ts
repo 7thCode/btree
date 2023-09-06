@@ -276,9 +276,9 @@ export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: I
 				} else if (near === 0) {
 					result = -1;
 				} else if ((_key > search) && near < 0) {
-					result = pivot - 1;
+					result = pivot - 1; // todo: nodeをトラバースする必要がある。
 				} else if ((_key < search) && near > 0) {
-					result = pivot + 1;
+					result = pivot + 1; // todo: nodeをトラバースする必要がある。
 				} else {
 					result = pivot;
 				}
@@ -296,6 +296,7 @@ export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: I
 	const _node: Node = node_record(record, node);
 
 	const offset = search(_node, find_key, -1);
+
 	if (key(_node, 1, offset) > find_key) {
 		result_node = lesser(record, node, offset);
 		result_value = -1;
@@ -341,12 +342,12 @@ export const insert_to_node = (mut_node: Node, entry: Entry): Node => {
 	};
 	const count = fill_count(mut_node, 1);
 	for (let offset = 0; offset <= count; offset++) {
-		const target_key: number = key(mut_node, 1, offset);
-		if (target_key > entry[1]) {
-			mut_node.data.splice(to_byte(offset - 1) - 1, 1, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
+		const target_key: number = key(mut_node, 1, offset + 1);
+		if (target_key > entry[1]) {　// 大きくなった
+			mut_node.data.splice(to_byte(offset) - 1, 1, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
 			result = mut_node;
 			break;
-		} else if (target_key === entry[1]) {
+		} else if (target_key === entry[1]) { // すでにある
 			result = mut_node;
 			break;
 		} else if (offset === count) {
@@ -372,7 +373,7 @@ export const update_to_node = (mut_node: Node, _key: Key, update_value: Value): 
 
 //　検索
 export const find = (record: Record, parent_node: number[], root_node: ID, find_key: Key): [parent_node: number[], node: ID, value: Value] => {
-	const result = find_at_node2(record, root_node, find_key);
+	const result = find_at_node(record, root_node, find_key);
 	if ((result[1] < 0) && (result[0] != 0)) {
 		parent_node.push(root_node);
 		return find(record, parent_node, result[0], find_key);
