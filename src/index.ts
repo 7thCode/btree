@@ -341,7 +341,7 @@ export const insert_to_node = (mut_node: Node, entry: Entry): Node => {
 		data: []
 	};
 	const count = fill_count(mut_node, 1);
-	for (let offset = 0; offset <= count; offset++) {
+	for (let offset = 0; offset < entry_count; offset++) {
 		const target_key: number = key(mut_node, 1, offset + 1);
 		if (target_key > entry[1]) {　// 大きくなった
 			mut_node.data.splice(to_byte(offset) - 1, 1, entry[0], entry[1], entry[2], entry[3]); // Keyが内輪で最大の「前」に追加。
