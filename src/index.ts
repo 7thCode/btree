@@ -8,7 +8,7 @@
 
 const fs = require("fs");
 
-const entry_size = 3;
+export const entry_size = 3;
 export const entry_count = 5;
 
 export interface Record {
@@ -49,6 +49,7 @@ export const to_byte = (entry_count: number): number => {
 	return (entry_count * entry_size) + 1;
 }
 
+/*
 export const entry = (record: Record, node: ID, offset: Offset): Entry => {
 	return [lesser(record, node, offset), key(record, node, offset), value(record, node, offset), grater(record, node, offset)];
 }
@@ -60,7 +61,7 @@ export const min_entry = (record: Record, node: ID): Entry => {
 export const max_entry = (record: Record, node: ID): Entry => {
 	return entry(record, node, fill_count(record, node));
 }
-
+*/
 export const to_index = (node: ID): number => {
 	return (node - 1) * node_bytes();
 }
@@ -105,9 +106,9 @@ export const set_grater = (record: Record, node: ID, offset: Offset, value: ID):
 	set(record, to_index(node) + to_graiter_index_delta(offset), value);
 }
 
-export const set_key = (record: Record, node: ID, offset: Offset, value: Key): void => {
-	set(record, to_index(node) + to_key_index_delta(offset), value);
-}
+//export const set_key = (record: Record, node: ID, offset: Offset, value: Key): void => {
+//	set(record, to_index(node) + to_key_index_delta(offset), value);
+//}
 
 export const set_value = (record: Record, node: ID, offset: Offset, value: Value): void => {
 	set(record, to_index(node) + to_value_index_delta(offset), value);
@@ -190,6 +191,7 @@ export const append_record = (record: Record, mut_node: Node): number => {
 	return bytes_to_node(record.data.length);
 }
 
+/*
 // 一つのノードからEntryを削除
 export const erase_entry = (record: Record, node: ID, offset: Offset): void => {
 	const mut_node: Node = node_record(record, node);
@@ -251,8 +253,9 @@ export const grater_than = (record: Record, node: ID, entry_index: Key): ID => {
 		return node;
 	}
 }
-
+*/
 // binary search
+/*
 export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
 
 	const search = (mut_node: Node, find_key: Key, range: number = 0): number => {
@@ -309,7 +312,7 @@ export const find_at_node2 = (record: Record, node: ID, find_key: Key): [node: I
 	}
 	return [result_node, result_value];
 }
-
+*/
 // serial
 export const find_at_node = (record: Record, node: ID, find_key: Key): [node: ID, value: Value] => {
 	let result_value: number = -1;
@@ -362,7 +365,7 @@ export const insert_to_node = (mut_node: Node, entry: Entry): Node => {
 // 一つのノードを更新
 export const update_to_node = (mut_node: Node, _key: Key, update_value: Value): void => {
 	const count = fill_count(mut_node, 1);
-	for (let offset = 0; offset <= count; offset++) {
+	for (let offset = 1; offset <= count; offset++) {
 		const target_key: number = key(mut_node, 1, offset);
 		if (target_key === _key) {
 			set_value(mut_node, 1, offset, update_value);
@@ -463,6 +466,7 @@ export const update = (record: Record, root_node: ID, insert_key: Key, insert_va
 }
 
 //　削除
+/*
 export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 
 	if (key === 2142) {
@@ -497,28 +501,14 @@ export const erase = (record: Record, root_node: ID, key: Key): boolean => {
 		} else {
 			erase_entry(record, found_node_index, offset);
 		}
-		/*
-				if (fill_count(record, found_node_index) === 0) {
-					if (parents.length > 0) {
-						const parent = parents[parents.length - 1];
-						for (let offset = 1; offset < fill_count(record, parent) + 1; offset++) {
-							if (lesser(record, parent, offset) === closest_min_node) {
-								set_lesser(record, parent, offset, 0);
-							}
-							if (grater(record, parent, offset) === closest_max_node) {
-								set_grater(record, parent, offset, 0);
-							}
-						}
-					}
-				}
-		*/
+
 		result = true;
 	} else {
 		console.log(key, JSON.stringify(record));
 	}
 	return result;
 }
-
+*/
 export const Find = (record: Record, find_key: Key): [parent_node: number[], node: ID, value: Value] => {
 	return find(record, [], 1, find_key);
 }
@@ -531,11 +521,12 @@ export const Update = (record: Record, find_key: Key, update_value: Value): bool
 	return update(record, 1, find_key, update_value);
 }
 
-export const Erase = (record: Record, key: Key): boolean => {
-	return erase(record, 1, key);
-}
+//export const Erase = (record: Record, key: Key): boolean => {
+//	return erase(record, 1, key);
+//}
 
 // バイナリーサーチ
+/*
 export const BinarySearch = (data: number[], key: number, near: number = 0): number => {
 
 	const compare = (data: number[], search: number, start: number, end: number, near: number): number => {
@@ -571,7 +562,6 @@ export const BinarySearch = (data: number[], key: number, near: number = 0): num
 	return compare(data, key, 0, data.length, near);
 }
 
-
 // adler32 Hash
 export const adler32 = (S: string): number => {
 	let A = 1, B = 0, p = 0;
@@ -594,3 +584,4 @@ export const read = () => {
 	const a = buff2[0];
 	fs.closeSync(fd);
 }
+*/
